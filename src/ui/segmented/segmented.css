@@ -154,6 +154,22 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  /* Count: the neutral count badge after the label; on the chosen segment it takes the
+     tone's tint, as a tab's count takes the accent. Icon-only segments carry it on the
+     icon's corner, inside the segment so the track's clip never cuts it. */
+  .fa-segmented-item[data-pressed] > .fa-count:not([data-overlay]),
+  .fa-segmented-trigger > .fa-count {
+    --_bg: var(--_on-soft);
+    --_fg: var(--_on-text);
+  }
+  .fa-segmented-item > .fa-count[data-overlay] {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: 0;
+  }
+  .fa-segmented-trigger > .fa-count {
+    margin-inline-start: var(--space-half);
+  }
   .fa-segmented[data-compact] > .fa-segmented-item {
     flex: none;
     width: calc(var(--_h) - var(--_pad) * 2);
@@ -246,6 +262,16 @@
     height: var(--icon-sm);
     margin-inline-start: auto;
     color: var(--accent-text);
+  }
+  .fa-item > .fa-segmented-menu-count {
+    flex: none;
+  }
+  /* Every row keeps its check's slot, so the counts line up whichever row is chosen. */
+  .fa-segmented-menu-count + .fa-segmented-check {
+    margin-inline-start: var(--space-2);
+  }
+  .fa-segmented-check[data-unchecked] {
+    visibility: hidden;
   }
 
   /* Off-screen row that gives the natural width with every label, in any form. */

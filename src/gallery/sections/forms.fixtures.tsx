@@ -24,10 +24,10 @@ import type { SelectGroup, SelectOption } from "../../ui/select/index.js"
 
 export type AgentGroup = "workstations" | "servers" | "laptops" | "kiosks"
 export const AGENT_GROUPS: Array<SelectOption<AgentGroup>> = [
-  { value: "workstations", label: "Workstations", icon: <IconEndpoint />, detail: "184" },
-  { value: "laptops", label: "Laptops", icon: <IconLaptop />, detail: "62" },
-  { value: "servers", label: "Servers", icon: <IconServer />, detail: "9" },
-  { value: "kiosks", label: "Front counter kiosks", icon: <IconDisplays />, detail: "4" },
+  { value: "workstations", label: "Workstations", icon: <IconEndpoint />, count: 184 },
+  { value: "laptops", label: "Laptops", icon: <IconLaptop />, count: 62 },
+  { value: "servers", label: "Servers", icon: <IconServer />, count: 9 },
+  { value: "kiosks", label: "Front counter kiosks", icon: <IconDisplays />, count: 4 },
 ]
 
 export type Environment = "production" | "staging" | "development"

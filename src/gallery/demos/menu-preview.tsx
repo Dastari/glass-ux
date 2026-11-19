@@ -41,10 +41,40 @@ export default function MenuSection() {
         </Specimen>
 
         <Specimen
+          title="Counts"
+          description="count: how many things a row leads to, in quiet trailing figures before any shortcut or chevron. Locale digits, read with the label."
+          specimenKey="menu:default:3"
+        >
+          <MenuPreview.Surface label="Filter alerts">
+            <MenuPreview.Group>
+              <MenuPreview.GroupLabel>Severity</MenuPreview.GroupLabel>
+              <MenuPreview.Item checked count={4}>
+                Critical
+              </MenuPreview.Item>
+              <MenuPreview.Item checked count={27} highlighted>
+                Warning
+              </MenuPreview.Item>
+              <MenuPreview.Item checked={false} count={1204}>
+                Information
+              </MenuPreview.Item>
+            </MenuPreview.Group>
+            <MenuPreview.Separator />
+            <MenuPreview.Group>
+              <MenuPreview.Item count={8} submenu>
+                Organisation
+              </MenuPreview.Item>
+              <MenuPreview.Item count={3} shortcut="mod+shift+a">
+                Assigned to me
+              </MenuPreview.Item>
+            </MenuPreview.Group>
+          </MenuPreview.Surface>
+        </Specimen>
+
+        <Specimen
           title="Rows with and without icons"
           description="A menu with any icon keeps that column on every row, so labels share one edge. One with no icons or ticks starts its labels at the row's inset."
           wide
-          specimenKey="menu:default:3"
+          specimenKey="menu:default:4"
         >
           <div data-testid="menu-mixed-rows">
             <MenuPreview.Surface label="Tab">
@@ -70,7 +100,7 @@ export default function MenuSection() {
         <Specimen
           title="Detail line"
           description="A second line under the label gives the row one fixed taller height, and the icon slot a thumbnail's box."
-          specimenKey="menu:default:4"
+          specimenKey="menu:default:5"
         >
           <MenuPreview.Surface label="Recent reports">
             <MenuPreview.Item icon={<IconDownload />} detail="Reports · 12 March">

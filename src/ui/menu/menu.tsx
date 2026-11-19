@@ -7,6 +7,8 @@ import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { Kbd, useAriaShortcut } from "../kbd/index.js"
 import { Tooltip } from "../tooltip/index.js"
 import { usePopupLayer } from "../../lib/popup-container.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
+import { countText } from "../badge/badge.js"
 
 /*
  * Positioners take px numbers, so offsets are measured from tokens by usePopupMetrics and
@@ -36,13 +38,16 @@ interface ItemContentProps {
   trail?: ReactNode
   /** A second line under the label. The row takes the taller rich height and `icon` a thumbnail's box. */
   detail?: ReactNode
+  /** How many things the row leads to ("Open 12"): quiet trailing figures, locale digits, read with the label. Never put the number in the label. */
+  count?: number | undefined
 }
 
 /**
  * The inside of every menu row (menu, context menu, action menus, previews): icon, label,
  * then a trailing shortcut or chevron. One layout, so every list reads the same.
  */
-export function MenuItemContent({ icon, children, shortcut, trail, detail }: ItemContentProps) {
+export function MenuItemContent({ icon, children, shortcut, trail, detail, count }: ItemContentProps) {
+  const locale = useLocale()
   return (
     <>
       {detail && icon ? <MenuLeading>{icon}</MenuLeading> : icon}
@@ -54,6 +59,7 @@ export function MenuItemContent({ icon, children, shortcut, trail, detail }: Ite
       ) : (
         <span className="fa-item-label">{children}</span>
       )}
+      {count === undefined ? null : <span className="fa-item-trail fa-menu-count">{countText(count, locale, Number.POSITIVE_INFINITY)}</span>}
       {shortcut ? <Kbd keys={shortcut} variant="text" className="fa-item-trail" /> : null}
       {trail}
     </>
@@ -148,6 +154,8 @@ export interface MenuItemProps extends Omit<ComponentProps<typeof BaseMenu.Item>
   trail?: ReactNode
   /** A second line under the label, for a path or a date. The row takes the rich height, and `icon` may be a thumbnail. */
   detail?: ReactNode
+  /** How many things the row leads to ("Open 12"): quiet trailing figures, locale digits, read with the label. Never put the number in the label. */
+  count?: number | undefined
   tone?: MenuItemTone
   /**
    * Disable the row and say why. The row is dimmed but stays highlightable; the reason is its
@@ -170,7 +178,7 @@ export interface MenuItemProps extends Omit<ComponentProps<typeof BaseMenu.Item>
   reasonId?: string
 }
 
-function MenuItem({ icon, children, shortcut, trail, detail, tone = "default", disabled, disabledReason, reasonShown: _reasonShown, reasonId: _reasonId, className, ...rest }: MenuItemProps) {
+function MenuItem({ icon, children, shortcut, trail, detail, count, tone = "default", disabled, disabledReason, reasonShown: _reasonShown, reasonId: _reasonId, className, ...rest }: MenuItemProps) {
   const reasonId = useId()
   const aria = useAriaShortcut(shortcut)
   const isDisabled = Boolean(disabled || disabledReason)
@@ -186,7 +194,7 @@ function MenuItem({ icon, children, shortcut, trail, detail, tone = "default", d
           data-tone={tone === "danger" ? "danger" : undefined}
           data-rich={detail ? "" : undefined}
         >
-          <MenuItemContent icon={icon} detail={detail} shortcut={shortcut} trail={trail ? <span className="fa-item-trail fa-menu-trail">{trail}</span> : undefined}>
+          <MenuItemContent icon={icon} detail={detail} count={count} shortcut={shortcut} trail={trail ? <span className="fa-item-trail fa-menu-trail">{trail}</span> : undefined}>
             {children}
           </MenuItemContent>
         </BaseMenu.Item>
@@ -200,12 +208,14 @@ export interface MenuLinkItemProps extends Omit<ComponentProps<typeof BaseMenu.L
   className?: string
   icon?: ReactNode
   children: ReactNode
+  /** How many things the row leads to ("Open 12"): quiet trailing figures, locale digits, read with the label. Never put the number in the label. */
+  count?: number | undefined
 }
 
-function MenuLinkItem({ icon, children, className, ...rest }: MenuLinkItemProps) {
+function MenuLinkItem({ icon, children, count, className, ...rest }: MenuLinkItemProps) {
   return (
     <BaseMenu.LinkItem {...rest} className={cx("fa-item fa-menu-item", className)}>
-      <MenuItemContent icon={icon}>{children}</MenuItemContent>
+      <MenuItemContent icon={icon} count={count}>{children}</MenuItemContent>
     </BaseMenu.LinkItem>
   )
 }
@@ -217,6 +227,8 @@ export interface MenuCheckboxItemProps extends Omit<ComponentProps<typeof BaseMe
   shortcut?: string
   /** A short trailing note in the trail slot, e.g. where a hidden column went ("In row details"). */
   trail?: ReactNode
+  /** How many things the row leads to ("Open 12"): quiet trailing figures, locale digits, read with the label. Never put the number in the label. */
+  count?: number | undefined
   /**
    * Disable the row and say why. The row is dimmed but stays highlightable; the reason is its
    * tooltip on hover and keyboard highlight, and its accessible description.
@@ -225,7 +237,7 @@ export interface MenuCheckboxItemProps extends Omit<ComponentProps<typeof BaseMe
 }
 
 /** A toggle. The tick takes the icon slot so labels stay aligned with icon rows. */
-function MenuCheckboxItem({ children, shortcut, trail, disabled, disabledReason, className, ...rest }: MenuCheckboxItemProps) {
+function MenuCheckboxItem({ children, shortcut, trail, count, disabled, disabledReason, className, ...rest }: MenuCheckboxItemProps) {
   const reasonId = useId()
   const aria = useAriaShortcut(shortcut)
   return (
@@ -243,7 +255,7 @@ function MenuCheckboxItem({ children, shortcut, trail, disabled, disabledReason,
               <IconCheck />
             </BaseMenu.CheckboxItemIndicator>
           </span>
-          <MenuItemContent shortcut={shortcut} trail={trail ? <span className="fa-item-trail">{trail}</span> : undefined}>
+          <MenuItemContent shortcut={shortcut} count={count} trail={trail ? <span className="fa-item-trail">{trail}</span> : undefined}>
             {children}
           </MenuItemContent>
         </BaseMenu.CheckboxItem>
@@ -258,6 +270,8 @@ export interface MenuRadioItemProps extends Omit<ComponentProps<typeof BaseMenu.
   children: ReactNode
   /** Keyboard shortcut shown with the control, using the host platform’s modifier keys. */
   shortcut?: string
+  /** How many things the row leads to ("Open 12"): quiet trailing figures, locale digits, read with the label. Never put the number in the label. */
+  count?: number | undefined
   /**
    * Disable the row and say why. The row is dimmed but stays highlightable; the reason is its
    * tooltip on hover and keyboard highlight, and its accessible description.
@@ -266,7 +280,7 @@ export interface MenuRadioItemProps extends Omit<ComponentProps<typeof BaseMenu.
 }
 
 /** One choice in a RadioGroup. The dot takes the icon slot. */
-function MenuRadioItem({ children, shortcut, disabled, disabledReason, className, ...rest }: MenuRadioItemProps) {
+function MenuRadioItem({ children, shortcut, count, disabled, disabledReason, className, ...rest }: MenuRadioItemProps) {
   const reasonId = useId()
   const aria = useAriaShortcut(shortcut)
   return (
@@ -282,7 +296,7 @@ function MenuRadioItem({ children, shortcut, disabled, disabledReason, className
           <span className="fa-item-icon fa-menu-indicator" aria-hidden>
             <BaseMenu.RadioItemIndicator className="fa-menu-dot" keepMounted />
           </span>
-          <MenuItemContent shortcut={shortcut}>{children}</MenuItemContent>
+          <MenuItemContent shortcut={shortcut} count={count}>{children}</MenuItemContent>
         </BaseMenu.RadioItem>
       </ReasonTooltip>
       <ReasonText id={reasonId} reason={disabledReason} />
@@ -307,6 +321,8 @@ function MenuGroup({ className, ...rest }: ComponentProps<typeof BaseMenu.Group>
 export interface MenuSubmenuProps {
   icon?: ReactNode
   label: ReactNode
+  /** How many things the row leads to ("Open 12"): quiet trailing figures, locale digits, read with the label. Never put the number in the label. */
+  count?: number | undefined
   disabled?: boolean
   /**
    * Disable the row and say why. The row is dimmed but stays highlightable; the reason is its
@@ -334,7 +350,7 @@ export interface MenuSubmenuProps {
 }
 
 /** A row that opens a nested menu (→ / hover), with a chevron. */
-function MenuSubmenu({ icon, label, disabled, disabledReason, tone = "default", popupClassName, children }: MenuSubmenuProps) {
+function MenuSubmenu({ icon, label, count, disabled, disabledReason, tone = "default", popupClassName, children }: MenuSubmenuProps) {
   const reasonId = useId()
   const isDisabled = Boolean(disabled || disabledReason)
   const { submenuInset } = usePopupMetrics()
@@ -349,7 +365,7 @@ function MenuSubmenu({ icon, label, disabled, disabledReason, tone = "default", 
             className="fa-item fa-menu-item"
             data-tone={tone === "danger" ? "danger" : undefined}
           >
-            <MenuItemContent icon={icon} trail={<Chevron />}>
+            <MenuItemContent icon={icon} count={count} trail={<Chevron />}>
               {label}
             </MenuItemContent>
           </BaseMenu.SubmenuTrigger>
@@ -398,7 +414,7 @@ interface PreviewItemProps extends ItemContentProps {
   radio?: boolean
 }
 
-function PreviewItem({ icon, children, shortcut, detail, tone, highlighted, open, disabledReason, submenu, checked, radio }: PreviewItemProps) {
+function PreviewItem({ icon, children, shortcut, detail, count, tone, highlighted, open, disabledReason, submenu, checked, radio }: PreviewItemProps) {
   const indicator =
     checked === undefined ? null : (
       <span className="fa-item-icon fa-menu-indicator" aria-hidden>
@@ -421,7 +437,7 @@ function PreviewItem({ icon, children, shortcut, detail, tone, highlighted, open
       data-rich={detail ? "" : undefined}
     >
       {indicator}
-      <MenuItemContent icon={icon} detail={detail} shortcut={shortcut} trail={submenu ? <Chevron /> : undefined}>
+      <MenuItemContent icon={icon} detail={detail} count={count} shortcut={shortcut} trail={submenu ? <Chevron /> : undefined}>
         {children}
       </MenuItemContent>
     </div>

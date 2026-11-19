@@ -11,6 +11,7 @@ import { numberFormat } from "../../lib/locale/intl.js"
 import { useLocale } from "../../lib/locale/use-locale.js"
 import { Button } from "../button/index.js"
 import { Skeleton } from "../skeleton/index.js"
+import { countText } from "../badge/badge.js"
 import { matchRanges, type OptionItem, type SearchStatus } from "./source.js"
 
 /** `text` with the parts matching `query` emphasised (case- and diacritic-insensitive). */
@@ -52,6 +53,7 @@ export interface OptionRowProps {
  * the right and an optional ✓ column. A disabled option shows its reason as the second line.
  */
 export function OptionRow({ item, query = "", check }: OptionRowProps) {
+  const locale = useLocale()
   const second = item.disabled && item.disabledReason ? item.disabledReason : item.description
   return (
     <>
@@ -66,6 +68,7 @@ export function OptionRow({ item, query = "", check }: OptionRowProps) {
           </span>
         ) : null}
       </span>
+      {item.count !== undefined ? <span className="fa-option-meta fa-option-count">{countText(item.count, locale, Number.POSITIVE_INFINITY)}</span> : null}
       {item.meta !== undefined ? <span className="fa-option-meta">{item.meta}</span> : null}
       {check ? (
         <span className="fa-select-check" aria-hidden>

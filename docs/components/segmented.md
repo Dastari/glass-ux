@@ -22,6 +22,29 @@ chosen segment.
 />
 ```
 
+## Counts (R8.5)
+
+Give an option a `count` for how many things the mode holds; never put the number in `label`.
+
+```tsx
+<Segmented
+  aria-label="Queue"
+  options={[
+    { value: "open", label: "Open", count: 12 },
+    { value: "waiting", label: "Waiting", count: 3 },
+    { value: "closed", label: "Closed", count: 1204 },
+  ]}
+/>
+```
+
+- **Full form:** a count badge after the label, tinted with the chosen pill's tone on the chosen
+  segment. Above 999 it reads 999+.
+- **Icons form:** the solid overlay on the icon's corner. The segment's name and tooltip are the
+  label and the count ("Open 12").
+- **Menu form:** the button shows the chosen option's badge and names it ("Queue: Open 12");
+  each menu row ends in the exact count, before the check.
+- The count is part of the natural width, so a count that grows can fold the control.
+
 ## Collapse (R7)
 
 The control measures the box it is given and shows the widest form that fits:

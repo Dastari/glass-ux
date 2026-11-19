@@ -17,6 +17,12 @@ import {
 } from "../sections/forms.sources.js";
 
 const SIZES: SelectSize[] = ["sm", "md", "lg"];
+const PATCH_RINGS = [
+  { value: "pilot", label: "Pilot", count: 12 },
+  { value: "broad", label: "Broad", count: 318 },
+  { value: "deferred", label: "Deferred", count: 41 },
+  { value: "excluded", label: "Excluded", count: 3 },
+];
 
 export default function ComboboxSection() {
   return (
@@ -40,6 +46,12 @@ export default function ComboboxSection() {
               icon={<IconOrganisation />}
               defaultValue="northstar"
             />
+          </Field>
+          <Field
+            label="Patch ring"
+            hint="count: how many endpoints each option holds, in quiet trailing figures."
+          >
+            <Combobox options={PATCH_RINGS} defaultValue="pilot" />
           </Field>
         </FormStack>
       </Specimen>

@@ -3,21 +3,28 @@ import { Collapsible } from "@base-ui/react/collapsible"
 import type { ComponentProps, ReactNode } from "react"
 import { IconChevronRight } from "../../icons/generated/icons.js"
 import { cx } from "../../lib/cx.js"
+import { CountBadge } from "../badge/index.js"
 
 interface HeadProps {
   title: ReactNode
   /** Leading icon after the chevron. Pass it without a size. */
   icon?: ReactNode
-  /** Trailing data: a count, a status, a short value. */
+  /**
+   * How many things the section holds, as a count badge right after the title ("Alerts 3").
+   * Locale digits, read as part of the trigger's name. Never put the number in `title`.
+   */
+  count?: number
+  /** Trailing data: a status, a short value. For a number, use `count`. */
   meta?: ReactNode
 }
 
-function TriggerContent({ title, icon, meta }: HeadProps) {
+function TriggerContent({ title, icon, count, meta }: HeadProps) {
   return (
     <>
       <IconChevronRight className="fa-accordion-chevron" />
       {icon}
       <span className="fa-accordion-title">{title}</span>
+      {count === undefined ? null : <CountBadge value={count} className="fa-accordion-count" />}
       {meta ? <span className="fa-accordion-meta">{meta}</span> : null}
     </>
   )
@@ -39,13 +46,13 @@ export interface AccordionItemProps extends Omit<ComponentProps<typeof BaseAccor
 }
 
 /** One section: a full-width row (chevron, icon, title, meta) and its panel. */
-function AccordionItem({ title, icon, meta, level = 3, className, children, ...rest }: AccordionItemProps) {
+function AccordionItem({ title, icon, count, meta, level = 3, className, children, ...rest }: AccordionItemProps) {
   const Heading = `h${level}` as const
   return (
     <BaseAccordion.Item {...rest} className={cx("fa-accordion-item", className)}>
       <BaseAccordion.Header className="fa-accordion-header" render={<Heading />}>
         <BaseAccordion.Trigger className="fa-item fa-accordion-trigger">
-          <TriggerContent title={title} icon={icon} meta={meta} />
+          <TriggerContent title={title} icon={icon} count={count} meta={meta} />
         </BaseAccordion.Trigger>
       </BaseAccordion.Header>
       <BaseAccordion.Panel className="fa-collapse fa-accordion-panel">
@@ -71,11 +78,11 @@ export interface DisclosureProps extends Omit<ComponentProps<typeof Collapsible.
 }
 
 /** A single show/hide section with the accordion's row and motion. */
-export function Disclosure({ title, icon, meta, className, children, ...rest }: DisclosureProps) {
+export function Disclosure({ title, icon, count, meta, className, children, ...rest }: DisclosureProps) {
   return (
     <Collapsible.Root {...rest} className={cx("fa-accordion fa-accordion-item", className)}>
       <Collapsible.Trigger className="fa-item fa-accordion-trigger">
-        <TriggerContent title={title} icon={icon} meta={meta} />
+        <TriggerContent title={title} icon={icon} count={count} meta={meta} />
       </Collapsible.Trigger>
       <Collapsible.Panel className="fa-collapse fa-accordion-panel" data-collapsible="">
         <div className="fa-accordion-content">{children}</div>

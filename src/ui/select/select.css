@@ -84,6 +84,9 @@
   .fa-select-item + .fa-select-group {
     margin-top: var(--space-1);
   }
+  .fa-select-item .fa-item-trail ~ .fa-item-trail {
+    margin-inline-start: 0;
+  }
   .fa-select-check {
     display: inline-grid;
     flex: none;

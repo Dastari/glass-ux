@@ -12,8 +12,9 @@ A single show/hide section with the accordion's row and motion.
 | --- | --- | --- | --- | --- | --- |
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| count | `number \| undefined` | See type | no | — | How many things the section holds, as a count badge right after the title ("Alerts 3"). Locale digits, read as part of the trigger's name. Never put the number in `title`. |
 | icon | `ReactNode` | See type | no | — | Leading icon after the chevron. Pass it without a size. |
-| meta | `ReactNode` | See type | no | — | Trailing data: a count, a status, a short value. |
+| meta | `ReactNode` | See type | no | — | Trailing data: a status, a short value. For a number, use `count`. |
 | title | `ReactNode` | See type | yes | — | The heading or title content. |
 
 Inherited properties:

@@ -99,6 +99,7 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 | --- | --- | --- | --- | --- | --- |
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| count | `number \| undefined` | See type | no | — | How many things the row leads to ("Open 12"): quiet trailing figures, locale digits, read with the label. Never put the number in the label. |
 | detail | `ReactNode` | See type | no | — | A second line under the label, for a path or a date. The row takes the rich height, and `icon` may be a thumbnail. |
 | disabledReason | `string \| null \| undefined` | See type | no | — | Disable the row and say why. The row is dimmed but stays highlightable; the reason is its tooltip on hover and keyboard highlight, and its accessible description. |
 | icon | `ReactNode` | See type | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
@@ -132,6 +133,7 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 | --- | --- | --- | --- | --- | --- |
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| count | `number \| undefined` | See type | no | — | How many things the row leads to ("Open 12"): quiet trailing figures, locale digits, read with the label. Never put the number in the label. |
 | icon | `ReactNode` | See type | no | — | An icon element without an explicit size; the component sizes it through its tokens. |
 
 Inherited properties:
@@ -155,6 +157,7 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 | --- | --- | --- | --- | --- | --- |
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| count | `number \| undefined` | See type | no | — | How many things the row leads to ("Open 12"): quiet trailing figures, locale digits, read with the label. Never put the number in the label. |
 | disabledReason | `string \| null \| undefined` | See type | no | — | Disable the row and say why. The row is dimmed but stays highlightable; the reason is its tooltip on hover and keyboard highlight, and its accessible description. |
 | shortcut | `string \| undefined` | See type | no | — | Keyboard shortcut shown with the control, using the host platform’s modifier keys. |
 | trail | `ReactNode` | See type | no | — | A short trailing note in the trail slot, e.g. where a hidden column went ("In row details"). |
@@ -209,6 +212,7 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 | --- | --- | --- | --- | --- | --- |
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
+| count | `number \| undefined` | See type | no | — | How many things the row leads to ("Open 12"): quiet trailing figures, locale digits, read with the label. Never put the number in the label. |
 | disabledReason | `string \| null \| undefined` | See type | no | — | Disable the row and say why. The row is dimmed but stays highlightable; the reason is its tooltip on hover and keyboard highlight, and its accessible description. |
 | shortcut | `string \| undefined` | See type | no | — | Keyboard shortcut shown with the control, using the host platform’s modifier keys. |
 
@@ -294,6 +298,7 @@ Also accepts the element’s standard HTML attributes and React DOM events.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | children | `ReactNode` | See type | yes | — | The content or component slots rendered inside the component. |
+| count | `number \| undefined` | See type | no | — | How many things the row leads to ("Open 12"): quiet trailing figures, locale digits, read with the label. Never put the number in the label. |
 | disabled | `boolean \| undefined` | false, true | no | — | Disables interaction while retaining the component’s disabled appearance. |
 | disabledReason | `string \| null \| undefined` | See type | no | — | Disable the row and say why. The row is dimmed but stays highlightable; the reason is its tooltip on hover and keyboard highlight, and its accessible description. |
 | icon | `ReactNode` | See type | no | — | An icon element without an explicit size; the component sizes it through its tokens. |

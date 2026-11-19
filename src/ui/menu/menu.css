@@ -21,6 +21,11 @@
   .fa-menu-item .fa-item-trail {
     flex: none;
   }
+  /* Several trailing parts (a count, a shortcut, a note, a chevron) share the one push to
+     the end and keep the trail's own gap between them. */
+  .fa-menu-item .fa-item-trail ~ .fa-item-trail {
+    margin-inline-start: 0;
+  }
   /* A value note in the trail gives way to the label and ends in an ellipsis. */
   .fa-menu-item .fa-menu-trail {
     flex: 0 1 auto;

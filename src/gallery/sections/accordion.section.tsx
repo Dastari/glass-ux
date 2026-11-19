@@ -12,7 +12,7 @@ export default function AccordionSection() {
             <Accordion.Item value="cpu" title="Processor" icon={<IconCpu />} meta="Intel(R) Core(TM) i5-8500T">
               6 cores · 6 threads · 2.10 GHz base · 3.50 GHz boost
             </Accordion.Item>
-            <Accordion.Item value="network" title="Network adapters" icon={<IconNetwork />} meta="2">
+            <Accordion.Item value="network" title="Network adapters" icon={<IconNetwork />} count={2}>
               <DetailGrid min="sm">
                 <DetailTile label="Ethernet" value="10.4.12.106" detail="Intel I219-LM · 1 Gbps" numeric />
                 <DetailTile label="Wi-Fi" value="Disconnected" detail="Intel AX201" />
@@ -21,7 +21,7 @@ export default function AccordionSection() {
             <Accordion.Item value="disks" title="Disks" icon={<IconDisk />} meta="256 GB">
               C: · Local disk · 212 GB of 256 GB used
             </Accordion.Item>
-            <Accordion.Item value="software" title="Installed software" icon={<IconSoftware />} meta="142" disabled>
+            <Accordion.Item value="software" title="Installed software" icon={<IconSoftware />} count={142} disabled>
               Inventory is still being collected.
             </Accordion.Item>
           </Accordion.Root>

@@ -276,7 +276,7 @@ export function Kanban<C extends KanbanCardData = KanbanItem>({
               aria-label={t.columns}
               value={active}
               onValueChange={showColumn}
-              options={columns.map((column) => ({ value: column.id, label: `${column.title} ${loading ? "" : (byColumn.get(column.id)?.length ?? 0)}`.trim() }))}
+              options={columns.map((column) => ({ value: column.id, label: column.title, count: loading ? undefined : (byColumn.get(column.id)?.length ?? 0) }))}
             />
             <Button size="sm" variant="ghost" icon={<IconChevronRight />} aria-label={t.nextColumn} disabledReason={activeIndex >= columns.length - 1 ? t.lastColumn : undefined} onClick={() => showColumn(columns[activeIndex + 1]!.id)} />
           </div>

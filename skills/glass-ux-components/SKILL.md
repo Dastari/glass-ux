@@ -28,6 +28,10 @@ For sign-in, providers, two-factor codes, password reset and sign-up, use `Login
 the application's callbacks (`docs/components/login-flow.md`) rather than assembling fields.
 
 Compose documented slots rather than reproducing their markup or styling internals.
+A number beside a label goes in the component's `count` prop, never in the label text
+(`{ label: "Open", count: 12 }`, not `"Open (12)"`): Segmented options, Tabs, VerticalTabs,
+Menu rows, Select, Combobox and MultiSelect options, Accordion and Disclosure heads, and Sidebar
+groups and rows draw it as a badge or quiet figures, as R8.5 in `docs/ui-rules.md` sets out.
 Provide accessible names for icon-only controls. A disabled action carries its reason.
 Use `TruncatedText` where a full identifier must remain reachable, and the component's
 skeleton where data is loading. Give screens, video and images of a known shape an

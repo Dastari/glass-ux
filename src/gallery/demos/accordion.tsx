@@ -28,7 +28,7 @@ export default function AccordionSection() {
               value="network"
               title="Network adapters"
               icon={<IconNetwork />}
-              meta="2"
+              count={2}
             >
               <DetailGrid min="sm">
                 <DetailTile
@@ -47,7 +47,7 @@ export default function AccordionSection() {
               value="software"
               title="Installed software"
               icon={<IconSoftware />}
-              meta="142"
+              count={142}
               disabled
             >
               Inventory is still being collected.

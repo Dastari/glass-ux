@@ -233,6 +233,13 @@ follows a fine pointer and a glint on the rim nearest it.
 - **R8.3** Do not silently clip content: truncate with access to the full value, wrap, or
   scroll.
 - **R8.4** Identifiers, measurements and columns of numbers use tabular figures.
+- **R8.5** A count beside a label goes in the component's `count` prop, never in the label
+  text ("Open 12", not `label: "Open (12)"`). The component draws it in the right form for
+  where it sits: a count badge after a label inside a control (segments, tabs, accordion
+  heads, sidebar groups), quiet trailing figures at the end of a list row (menus, options,
+  sidebar items), and the solid overlay on an icon-only control's corner. Badges cap at
+  999+; trailing figures show the exact number. The count stays in the accessible name, after
+  the label, in locale digits.
 
 ## R9 · Stability
 

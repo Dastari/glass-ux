@@ -8,6 +8,8 @@ import { cx } from "../../lib/cx.js"
 import { usePopupMetrics } from "../../lib/popup-metrics.js"
 import { widthAttr, type FieldWidth } from "../field/index.js"
 import { popupContainer } from "../../lib/popup-container.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
+import { countText } from "../badge/badge.js"
 
 export type SelectSize = "sm" | "md" | "lg"
 
@@ -16,7 +18,9 @@ export interface SelectOption<V extends string = string> {
   label: string
   /** Shown in the row and, once chosen, in the trigger. Pass the icon without a size. */
   icon?: ReactNode
-  /** Quiet trailing text in the row (a count, a version). Never repeats the label. */
+  /** How many things the option stands for ("Critical 4"): quiet trailing figures in locale digits, read with the label. Never put the number in `label`. */
+  count?: number
+  /** Quiet trailing text in the row (a version). Never repeats the label. For a number, use `count`. */
   detail?: string
   disabled?: boolean
 }
@@ -70,10 +74,12 @@ export interface SelectProps<V extends string = string> {
 }
 
 function OptionRow<V extends string>({ option }: { option: SelectOption<V> }) {
+  const locale = useLocale()
   return (
     <BaseSelect.Item value={option.value} disabled={option.disabled} label={option.label} className="fa-item fa-select-item">
       {option.icon}
       <BaseSelect.ItemText className="fa-item-label">{option.label}</BaseSelect.ItemText>
+      {option.count !== undefined ? <span className="fa-item-trail fa-select-count">{countText(option.count, locale, Number.POSITIVE_INFINITY)}</span> : null}
       {option.detail ? <span className="fa-item-trail">{option.detail}</span> : null}
       <span className="fa-select-check" aria-hidden>
         <BaseSelect.ItemIndicator className="fa-select-indicator">

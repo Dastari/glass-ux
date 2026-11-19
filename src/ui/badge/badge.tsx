@@ -135,10 +135,15 @@ export interface CountBadgeProps extends Omit<ComponentProps<"span">, "children"
   overlay?: boolean
 }
 
+/** The text a CountBadge shows for `value`: locale digits, and "max+" above `max`. Quiet trailing figures pass no cap (`Infinity`); a badge caps so its pill stays short. */
+export function countText(value: number, locale: string, max = 999): string {
+  const number = numberFormat(locale)
+  return value > max ? `${number.format(max)}+` : number.format(value)
+}
+
 /** A number beside a navigation item or group ("Endpoints 12"), or on a corner (overlay). Tabular figures. */
 export function CountBadge({ value, max = 999, tone = "neutral", overlay = false, className, ...rest }: CountBadgeProps) {
-  const number = numberFormat(useLocale())
-  const text = value > max ? `${number.format(max)}+` : number.format(value)
+  const text = countText(value, useLocale(), max)
   return (
     <span {...rest} className={cx("fa-count", className)} data-tone={tone} data-overlay={overlay ? "" : undefined} data-numeric>
       {text}

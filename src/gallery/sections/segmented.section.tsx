@@ -1,5 +1,5 @@
 import { ContainerLab, Example, Matrix, Rules, SectionPage, Specimen, TokenTable } from "../kit.js"
-import { IconColumns, IconGrid, IconList, IconRemoteControl, IconTerminal, IconViewOnly } from "../../icons/generated/icons.js"
+import { IconArchive, IconClock, IconColumns, IconGrid, IconInbox, IconList, IconRemoteControl, IconTerminal, IconViewOnly } from "../../icons/generated/icons.js"
 import { Field, type ChoiceTone } from "../../ui/field/index.js"
 import { Segmented, type SegmentedOption } from "../../ui/segmented/index.js"
 
@@ -29,6 +29,11 @@ const MODULES: SegmentedOption[] = [
   { value: "psa", label: "PSA" },
   { value: "chat", label: "CHAT" },
 ]
+const QUEUES: SegmentedOption[] = [
+  { value: "open", label: "Open", icon: <IconInbox />, count: 12 },
+  { value: "waiting", label: "Waiting", icon: <IconClock />, count: 3 },
+  { value: "closed", label: "Closed", icon: <IconArchive />, count: 1204 },
+]
 const TONES: ChoiceTone[] = ["accent", "success", "warning", "danger"]
 /** Stepped boxes for the collapse ladder: every label, icons only, the menu. */
 const LADDER = [
@@ -49,6 +54,24 @@ export default function SegmentedSection() {
         </Example>
         <Example label="Icons only">
           <Segmented options={VIEWS} defaultValue="grid" iconOnly aria-label="View" />
+        </Example>
+      </Specimen>
+
+      <Specimen
+        title="Counts"
+        description="An option's count follows its label as a count badge, tinted with the chosen pill. Icon-only segments carry it on the corner; the menu form shows it on the button and in each row. Above 999 it reads 999+."
+      >
+        <Example label="Text">
+          <Segmented options={QUEUES.map(({ icon: _icon, ...option }) => option)} defaultValue="open" aria-label="Queue" />
+        </Example>
+        <Example label="Icon and text">
+          <Segmented options={QUEUES} defaultValue="waiting" size="sm" aria-label="Queue (small)" />
+        </Example>
+        <Example label="Icons only">
+          <Segmented options={QUEUES} defaultValue="open" iconOnly aria-label="Queue (icons)" />
+        </Example>
+        <Example label="Menu">
+          <Segmented options={QUEUES} defaultValue="open" collapse="menu" aria-label="Queue (menu)" />
         </Example>
       </Specimen>
 

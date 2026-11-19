@@ -19,7 +19,9 @@ export interface OptionItem<V extends string = string> {
   icon?: ReactNode
   /** Rows with the same group are listed together under an overline label. */
   group?: string
-  /** Right-aligned caption or badge: a status, a count, a version. */
+  /** How many things the option stands for ("Critical 4"): quiet trailing figures in locale digits, read with the label. Never put the number in `label`. */
+  count?: number
+  /** Right-aligned caption or badge: a status, a version. For a number, use `count`. */
   meta?: ReactNode
   disabled?: boolean
   /** Why it is disabled; shown in the row's tooltip and announced. */

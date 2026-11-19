@@ -45,6 +45,14 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  /* A count sits right after the title's text; the space after it is the title's, so the
+     meta stays at the trailing edge. */
+  .fa-accordion-trigger:has(> .fa-accordion-count) > .fa-accordion-title {
+    flex: 0 1 auto;
+  }
+  .fa-accordion-count {
+    margin-inline-end: auto;
+  }
   /* Meta gives way to the title: it never takes more than half the row. */
   .fa-accordion-meta {
     flex: 0 1 auto;

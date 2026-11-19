@@ -7,6 +7,9 @@ import { useGlide } from "../../lib/glide.js"
 import { fitForm, nextFitForm, overflowsOwnBox, useFitForm } from "../../lib/fit-form.js"
 import { useControllable } from "../../lib/use-controllable.js"
 import { useScrollEdges } from "../../lib/use-scroll-edges.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
+import { CountBadge } from "../badge/index.js"
+import { countText } from "../badge/badge.js"
 import { Menu, MenuPrimitive } from "../menu/index.js"
 import { useSettingRow } from "../setting-row/index.js"
 import type { ChoiceTone } from "../field/index.js"
@@ -37,6 +40,13 @@ export interface SegmentedOption<V extends string = string> {
   label: string
   /** Pass the icon without a size. Needed for the icon-only step in narrow boxes. */
   icon?: ReactNode
+  /**
+   * A count after the label, in the count badge's style ("Open 12"): what the mode holds.
+   * Locale digits, read as part of the segment's name. Icon-only segments carry it on the
+   * icon's corner; the collapsed menu shows it at the row's trailing edge. Never put the
+   * number in `label`.
+   */
+  count?: number
   disabled?: boolean
 }
 
@@ -154,7 +164,13 @@ export function Segmented<V extends string = string>({
   // In a SettingRow, the row's label and description name the control.
   const row = useSettingRow()
   const valueId = useId()
-  const signature = options.map((option) => `${option.value}:${option.label}:${option.icon ? 1 : 0}`).join("|")
+  const countId = useId()
+  const locale = useLocale()
+  const signature = options.map((option) => `${option.value}:${option.label}:${option.icon ? 1 : 0}:${option.count ?? ""}`).join("|")
+  // Icon-only segments are named by their label and count, as the full form reads ("Open 12").
+  const nameOf = (option: SegmentedOption<V>) => (option.count === undefined ? option.label : `${option.label} ${countText(option.count, locale)}`)
+  const badge = (option: SegmentedOption<V> | undefined, overlay = false) =>
+    option?.count === undefined ? null : <CountBadge value={option.count} overlay={overlay} aria-hidden={overlay || undefined} />
 
   const auto = collapse === "auto" && !block
   // Container awareness: the widest form that fits the box (fitSegmented, through the shared
@@ -201,6 +217,7 @@ export function Segmented<V extends string = string>({
           <span key={option.value} className="fa-segmented-item">
             {option.icon}
             <span className="fa-segmented-label">{option.label}</span>
+            {badge(option)}
           </span>
         ))}
       </span>
@@ -238,6 +255,7 @@ export function Segmented<V extends string = string>({
           <span role="radio" aria-checked={Boolean(chosen)} tabIndex={disabled ? undefined : 0} className="fa-segmented-trigger">
             {chosen?.icon}
             <span className="fa-segmented-label">{chosen?.label}</span>
+            {badge(chosen)}
           </span>
         ) : (
           <>
@@ -247,8 +265,8 @@ export function Segmented<V extends string = string>({
                 key={option.value}
                 role="radio"
                 aria-checked={option.value === current}
-                aria-label={compact ? option.label : undefined}
-                title={compact ? option.label : undefined}
+                aria-label={compact ? nameOf(option) : undefined}
+                title={compact ? nameOf(option) : undefined}
                 tabIndex={option === stop && !disabled ? 0 : undefined}
                 className="fa-segmented-item"
                 data-pressed={option.value === current ? "" : undefined}
@@ -256,6 +274,7 @@ export function Segmented<V extends string = string>({
               >
                 {option.icon}
                 {compact ? null : <span className="fa-segmented-label">{option.label}</span>}
+                {badge(option, compact)}
               </span>
             ))}
           </>
@@ -288,13 +307,15 @@ export function Segmented<V extends string = string>({
             className="fa-segmented-trigger fa-pressable"
             disabled={disabled}
             // The group's name and the chosen option, as the full form reads ("Module: RMM").
-            aria-label={groupLabel ? `${groupLabel}: ${chosen?.label ?? ""}` : undefined}
-            aria-labelledby={groupLabel ? undefined : cx(labelledBy, valueId) || undefined}
+            aria-label={groupLabel ? `${groupLabel}: ${chosen ? nameOf(chosen) : ""}` : undefined}
+            aria-labelledby={groupLabel ? undefined : cx(labelledBy, valueId, chosen?.count === undefined ? undefined : countId) || undefined}
           >
             {chosen?.icon}
             <span id={valueId} className="fa-segmented-label">
               {chosen?.label}
             </span>
+            {/* The space is not drawn in the flex row; it keeps the label and count apart in the visible text that Label in Name compares. */}
+            {chosen?.count === undefined ? null : <>{" "}<CountBadge id={countId} value={chosen.count} /></>}
             <IconChevronDown className="fa-segmented-chevron" />
           </MenuPrimitive.Trigger>
           <Menu.Popup align="start" className="fa-segmented-menu">
@@ -311,7 +332,8 @@ export function Segmented<V extends string = string>({
                 >
                   {option.icon}
                   <span className="fa-item-label">{option.label}</span>
-                  <MenuPrimitive.RadioItemIndicator className="fa-segmented-check">
+                  {option.count === undefined ? null : <span className="fa-item-trail fa-segmented-menu-count">{countText(option.count, locale, Number.POSITIVE_INFINITY)}</span>}
+                  <MenuPrimitive.RadioItemIndicator keepMounted className="fa-segmented-check">
                     <IconCheck />
                   </MenuPrimitive.RadioItemIndicator>
                 </MenuPrimitive.RadioItem>
@@ -356,11 +378,12 @@ export function Segmented<V extends string = string>({
           value={option.value}
           disabled={option.disabled}
           className="fa-segmented-item fa-lit"
-          aria-label={compact ? option.label : undefined}
-          title={compact ? option.label : undefined}
+          aria-label={compact ? nameOf(option) : undefined}
+          title={compact ? nameOf(option) : undefined}
         >
           {option.icon}
           {compact ? null : <span className="fa-segmented-label">{option.label}</span>}
+          {badge(option, compact)}
         </Toggle>
       ))}
       {measureRow}

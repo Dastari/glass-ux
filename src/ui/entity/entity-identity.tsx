@@ -1,4 +1,6 @@
 import { DirectionPortal } from "../../lib/direction-portal.js"
+import { listFormat } from "../../lib/locale/intl.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
 import { useMessages } from "../../lib/i18n/index.js"
 import { entityMessages } from "./messages.js"
 import { PreviewCard as BasePreviewCard } from "@base-ui/react/preview-card"
@@ -145,6 +147,12 @@ function factsText(facts: EntityIdentityProps["facts"]): ReactNode {
 
 function accessibleName(name: string, kind?: string, state?: EntityState) {
   return `${kind ? `${kind} ` : ""}${name}${state ? `, ${state.label}` : ""}`
+}
+
+/** What a row does not show in text: its kind and its state ("Organisation, Active"). */
+function rowContext(locale: string, kind?: string, state?: EntityState) {
+  const parts = [kind, state?.label].filter((part): part is string => Boolean(part))
+  return parts.length ? listFormat(locale, { type: "unit" }).format(parts) : undefined
 }
 
 function stateData(state: EntityState | undefined) {
@@ -489,6 +497,7 @@ function CompactTier<T>({ parts, dom }: TierProps<T>) {
 }
 
 function RowTier<T>({ parts, dom }: TierProps<T>) {
+  const locale = useLocale()
   const { name, title, kind, icon, portrait, state, facts, secondary, actions, targets, href, onOpen, slots } = parts
   const second = secondary ?? factsText(facts)
   const hasActions = Boolean(actions && targets.length)
@@ -503,17 +512,19 @@ function RowTier<T>({ parts, dom }: TierProps<T>) {
       </span>
     </>
   )
-  const label = accessibleName(name, kind, state)
+  // A row that opens is named by what it shows, the name and its second line (WCAG 2.5.3);
+  // the kind and the state, which it shows only as a glyph and a dot, are its description.
+  const context = rowContext(locale, kind, state)
   let main: ReactNode
   if (href) {
     main = (
-      <a className="fa-entity-main" href={href} onClick={openHandler(onOpen)} aria-label={label}>
+      <a className="fa-entity-main" href={href} onClick={openHandler(onOpen)} aria-description={context}>
         {content}
       </a>
     )
   } else if (onOpen) {
     main = (
-      <button type="button" className="fa-entity-main" onClick={onOpen} aria-label={label}>
+      <button type="button" className="fa-entity-main" onClick={onOpen} aria-description={context}>
         {content}
       </button>
     )
@@ -521,7 +532,7 @@ function RowTier<T>({ parts, dom }: TierProps<T>) {
     // Actions without an open target: still focusable, so Shift+F10 reaches the menu.
     main = (
       // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- the row is a context-menu target (R11.5)
-      <span className="fa-entity-main" tabIndex={0} role="group" aria-label={label}>
+      <span className="fa-entity-main" tabIndex={0} role="group" aria-label={accessibleName(name, kind, state)}>
         {content}
       </span>
     )

@@ -186,7 +186,8 @@ test("network workspace syncs map, table, details and shared site actions @respo
     .getByRole("button", { name: "Events", exact: true });
 
   // A site opens from the table: docked details on wide frames, a sheet on phones.
-  await sites.getByRole("button", { name: /Field House, Offline/ }).click();
+  // Named by what the row shows; its kind and state are the description.
+  await sites.getByRole("button", { name: /^Field House\b/ }).first().click();
   const details = page.getByTestId("network-detail");
   await expect(details).toContainText("0 of 8");
   await expect(details).toContainText(
@@ -208,7 +209,8 @@ test("network workspace syncs map, table, details and shared site actions @respo
   await expect(details).toContainText("Alerts acknowledged");
   await expect(details).toContainText("2 alerts acknowledged by Avery Quinn.");
   if (phone) await page.keyboard.press("Escape");
-  else await expect(events).toContainText("3");
+  // The rail's corner count is drawn from data-count (it pictures the count on the icon).
+  else await expect(events.locator(".fa-count")).toHaveAttribute("data-count", "3");
   palette = await openPalette(page, "Ping gateway");
   await palette.getByRole("option", { name: /Ping gateway/ }).click();
   await expect(page.getByText(/WHV-GW01 replied in \d+ ms/)).toBeVisible();
@@ -369,10 +371,7 @@ test("network notes, account and profile keep focus and edits @responsive", asyn
     workspace.getByRole("region", { name: "Meridian network sites" }),
   ).toBeVisible();
   await page.waitForLoadState("networkidle");
-  const account = workspace.getByRole("button", {
-    name: "Account: Avery Quinn",
-    exact: true,
-  });
+  const account = workspace.getByRole("button", { name: /^Avery Quinn/ }).and(workspace.locator(".fa-shell-account"));
   const notes = workspace.getByRole("region", {
     name: "Network review notes",
     exact: true,
@@ -441,10 +440,7 @@ test("network account menu switches accounts through the sign-in flow @responsiv
   );
   await page.goto("./#network");
   const workspace = page.getByTestId("network-workspace");
-  const account = workspace.getByRole("button", {
-    name: "Account: Avery Quinn",
-    exact: true,
-  });
+  const account = workspace.getByRole("button", { name: /^Avery Quinn/ }).and(workspace.locator(".fa-shell-account"));
   await account.click();
   await page
     .getByRole("menuitem", { name: "Switch account", exact: true })
@@ -472,10 +468,7 @@ test("network account menu switches accounts through the sign-in flow @responsiv
   await dialog.getByLabel("Password", { exact: true }).fill("sample-pass");
   await signIn.click();
   await expect(dialog).toHaveCount(0);
-  const switched = workspace.getByRole("button", {
-    name: "Account: Mira Chen",
-    exact: true,
-  });
+  const switched = workspace.getByRole("button", { name: /^Mira Chen/ }).and(workspace.locator(".fa-shell-account"));
   await expect(switched).toBeFocused();
   await expect(page.getByText("Signed in as Mira Chen").first()).toBeVisible();
   await switched.click();

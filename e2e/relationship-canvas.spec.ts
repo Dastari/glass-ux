@@ -19,17 +19,21 @@ async function open(page: Page) {
   );
   await page.goto("/components/relationship-canvas");
   const schema = page.getByTestId("relationship-schema");
-  await expect(schema.getByRole("option", { name: "Post", exact: true })).toBeVisible({ timeout: 30_000 });
+  await expect(card(schema, "Post")).toBeVisible({ timeout: 30_000 });
   await schema.scrollIntoViewIfNeeded();
   return { errors, warnings, schema, canvas: schema.locator(".fa-relationship") };
 }
 
-const translate = (card: Locator) => card.evaluate((element: HTMLElement) => element.style.transform);
+/** A card's option, its header: named by what the header shows, the title and the row count. */
+const card = (scope: Locator, title: string) => scope.getByRole("option", { name: new RegExp(`^${title}( \\d+)?$`) });
+/** The card around an option. */
+const cardOf = (option: Locator) => option.locator("xpath=ancestor::*[@data-card-id][1]");
+const translate = (option: Locator) => cardOf(option).evaluate((element: HTMLElement) => element.style.transform);
 const worldTransform = (canvas: Locator) => canvas.locator(".fa-relationship-world").evaluate((element: HTMLElement) => element.style.transform);
 
 test("cards say what they hold and link to, and selecting one lights its edges @responsive", async ({ page }) => {
   const { errors, warnings, schema } = await open(page);
-  const post = schema.getByRole("option", { name: "Post", exact: true });
+  const post = card(schema, "Post");
   await expect(post).toHaveAccessibleDescription(/^5 rows: id uuid, author uuid, title text, body text\?, published timestamptz\?\. Links: author to Author, featured from Author, post from Comment, tags from Post tag\.$/);
   await expect(schema.getByRole("listbox", { name: "Schema, Active" })).toHaveAccessibleDescription(/Arrow keys move between cards/);
   await expect(schema.locator(".fa-relationship-edge[data-active]")).toHaveCount(0);
@@ -45,12 +49,11 @@ test("cards say what they hold and link to, and selecting one lights its edges @
 
 test("a header drags its card and Shift+arrow moves it; edges follow", async ({ page }) => {
   const { schema } = await open(page);
-  const tag = schema.getByRole("option", { name: "Tag", exact: true });
+  const tag = card(schema, "Tag");
   const edge = schema.locator('[data-edge-id="post_tag-tag"] > path');
   const before = await translate(tag);
   const path = await edge.getAttribute("d");
-  const header = tag.locator(".fa-relationship-card-header");
-  const box = (await header.boundingBox())!;
+  const box = (await tag.boundingBox())!;
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await page.mouse.down();
   for (let step = 1; step <= 8; step++) await page.mouse.move(box.x + box.width / 2 + step * 8, box.y + box.height / 2 + step * 6);
@@ -68,16 +71,16 @@ test("a header drags its card and Shift+arrow moves it; edges follow", async ({ 
 
 test("arrows travel between cards, Enter opens, and Auto layout restores order", async ({ page }) => {
   const { schema } = await open(page);
-  const post = schema.getByRole("option", { name: "Post", exact: true });
+  const post = card(schema, "Post");
   await post.focus();
   await page.keyboard.press("Enter");
   await expect(page.getByText("Opened Post")).toBeVisible();
   await page.keyboard.press("ArrowRight");
-  await expect(schema.getByRole("option", { name: "Author", exact: true })).toBeFocused();
+  await expect(card(schema, "Author")).toBeFocused();
   await page.keyboard.press("Shift+ArrowUp");
-  const moved = await translate(schema.getByRole("option", { name: "Author", exact: true }));
+  const moved = await translate(card(schema, "Author"));
   await schema.getByRole("button", { name: "Auto layout" }).click();
-  await expect.poll(() => translate(schema.getByRole("option", { name: "Author", exact: true }))).not.toBe(moved);
+  await expect.poll(() => translate(card(schema, "Author"))).not.toBe(moved);
 });
 
 test("the wheel pans, Ctrl+wheel and the buttons zoom, and the dot grid moves with the camera", async ({ page }) => {
@@ -109,10 +112,10 @@ test("the wheel pans, Ctrl+wheel and the buttons zoom, and the dot grid moves wi
 test("a new diagram re-fits, and on a phone the fit shows every card @responsive", async ({ page }) => {
   const { schema, canvas } = await open(page);
   await page.getByRole("group", { name: "Schema" }).getByRole("button", { name: "Draft" }).click();
-  await expect(schema.getByRole("option", { name: "Series", exact: true })).toBeVisible();
+  await expect(card(schema, "Series")).toBeVisible();
   const frame = (await canvas.boundingBox())!;
-  for (const card of await schema.getByRole("option").all()) {
-    const box = (await card.boundingBox())!;
+  for (const option of await schema.getByRole("option").all()) {
+    const box = (await cardOf(option).boundingBox())!;
     expect(box.x).toBeGreaterThanOrEqual(frame.x - 1);
     expect(box.x + box.width).toBeLessThanOrEqual(frame.x + frame.width + 1);
   }

@@ -578,7 +578,8 @@ export function LightboxViewer({
           {secondary.map(({ id, label: name, icon, face, shortcut, disabledReason, run, "aria-expanded": expanded }) =>
             face ? (
               <Button key={id} variant="ghost" size="sm" aria-label={name} tooltip={name} shortcut={shortcut} disabledReason={disabledReason} onClick={run}>
-                {face}
+                {/* The face ("1:1") is a glyph, drawn so it is not text the name must repeat (WCAG 2.5.3). */}
+                <span className="fa-drawn-text" data-text={face} aria-hidden />
               </Button>
             ) : (
               <Button key={id} variant="ghost" size="sm" icon={icon} aria-label={name} shortcut={shortcut} disabledReason={disabledReason} aria-expanded={expanded} onClick={run} />

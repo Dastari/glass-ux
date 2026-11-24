@@ -436,7 +436,8 @@ export function EditorToolbar({
             editor.focus();
           }}
         >
-          1.
+          {/* A glyph, drawn by CSS: as text it would be visible text the "Numbered list" name lacks (WCAG 2.5.3). */}
+          <span className="fa-drawn-text" data-text="1." aria-hidden />
         </Tool>
         <Tool
           label={messages.taskList}

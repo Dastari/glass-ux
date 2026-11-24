@@ -68,7 +68,8 @@ describe("text from application or translated words keeps its case", () => {
         </LocaleProvider>
       </TooltipProvider>,
     )
-    expect(screen.getByRole("button", { name: "Abfrage, Fertig" })).toBeInTheDocument()
+    // Named by what it shows; the status, in the pack's wording, is its description.
+    expect(screen.getByRole("button", { name: "Abfrage" })).toHaveAttribute("aria-description", "Fertig")
     expect(screen.getByRole("button", { name: "Argumente kopieren" })).toBeInTheDocument()
   })
 })

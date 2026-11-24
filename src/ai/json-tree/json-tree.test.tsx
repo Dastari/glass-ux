@@ -21,11 +21,11 @@ describe("JSON keyboard traversal", () => {
         value={{ alpha: { first: 1, second: 2 }, beta: true }}
       />,
     );
-    const root = screen.getByRole("treeitem", { name: "object, 2 keys" });
+    const root = screen.getByRole("treeitem", { name: "2 keys, object" });
     act(() => root.focus());
     press(root, "ArrowRight");
     const alpha = screen.getByRole("treeitem", {
-      name: "alpha: object, 2 keys",
+      name: "alpha: 2 keys, object",
     });
     expect(alpha).toHaveFocus();
     expect(root).toHaveAttribute("tabindex", "-1");
@@ -53,10 +53,10 @@ describe("JSON keyboard traversal", () => {
         value={Array.from({ length: 44 }, (_, index) => index)}
       />,
     );
-    const root = screen.getByRole("treeitem", { name: "array, 44 items" });
+    const root = screen.getByRole("treeitem", { name: "44 items, array" });
     act(() => root.focus());
     press(root, "End");
-    const more = screen.getByRole("treeitem", { name: "Show more of root" });
+    const more = screen.getByRole("treeitem", { name: /^Show 4 more of 44$/ });
     expect(more).toHaveFocus();
     press(more, "Enter");
     expect(screen.getAllByRole("treeitem")).toHaveLength(45);

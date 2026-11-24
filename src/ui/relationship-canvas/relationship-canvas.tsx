@@ -163,27 +163,36 @@ interface CardViewProps {
 }
 
 const CardView = /* @__PURE__ */ memo(function CardView({ card, at, height, selected, tabbable, name, description, movable }: CardViewProps) {
+  // The option is the card's header, not the whole card: an option containing the rows would
+  // show their text too, and speech input names an option by what it shows (WCAG 2.5.3). The
+  // rows are its description. A name from `describeCard` replaces the header's text.
   return (
     <Surface
       material="card"
       radius="tile"
-      role="option"
       className="fa-relationship-card"
       data-card-id={card.id}
-      aria-selected={selected}
-      aria-label={name}
-      aria-description={description}
-      tabIndex={tabbable ? 0 : -1}
       data-selected={selected ? "" : undefined}
       style={{ transform: `translate(${at.x}px, ${at.y}px)`, height }}
     >
-      <div className="fa-relationship-card-header" data-card-handle={movable ? "" : undefined}>
+      <div
+        className="fa-relationship-card-header"
+        role="option"
+        aria-selected={selected}
+        aria-label={name === card.title ? undefined : name}
+        aria-description={description}
+        tabIndex={tabbable ? 0 : -1}
+        data-card-handle={movable ? "" : undefined}
+      >
         {card.icon ? <span className="fa-relationship-card-icon">{card.icon}</span> : null}
         <span className="fa-relationship-card-title">{card.title}</span>
         {card.badge === null ? null : (
-          <Badge size="sm" tone="neutral">
-            {card.badge ?? card.rows.length}
-          </Badge>
+          <>
+            {" "}
+            <Badge size="sm" tone="neutral">
+              {card.badge ?? card.rows.length}
+            </Badge>
+          </>
         )}
       </div>
       <div className="fa-relationship-rows">
@@ -488,7 +497,7 @@ export function RelationshipCanvas<T = unknown>({
     (id: string | undefined) => {
       if (!id) return
       setActiveId(id)
-      worldRef.current?.querySelector<HTMLElement>(`[data-card-id="${CSS.escape(id)}"]`)?.focus({ preventScroll: true })
+      worldRef.current?.querySelector<HTMLElement>(`[data-card-id="${CSS.escape(id)}"] > [role="option"]`)?.focus({ preventScroll: true })
       reveal(id)
     },
     [reveal],

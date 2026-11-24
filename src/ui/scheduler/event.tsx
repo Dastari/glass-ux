@@ -1,4 +1,4 @@
-import type { CSSProperties, KeyboardEvent, PointerEvent, ReactElement, ReactNode } from "react"
+import { useId, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactElement, type ReactNode } from "react"
 import { ActionContextMenu } from "../actions/action-context-menu.js"
 import { cx } from "../../lib/cx.js"
 import { readingKey } from "../../lib/direction.js"
@@ -30,10 +30,15 @@ export interface EventButtonProps {
   children: ReactNode
 }
 
-/** An event as a button: its accessible name says what and when; Enter opens it, arrows edit it when editable. */
+/**
+ * An event as a button. Its name is what it shows (WCAG 2.5.3, so speech input reaches it by
+ * its visible title and time); its description says what, when and where in full, then how
+ * to edit it. Enter opens it, arrows edit it when editable.
+ */
 export function EventButton({ placed, variant, editKeys, className, style, tabIndex, onPointerDown, onKeyDown, data, children }: EventButtonProps) {
   const context = useScheduler()
   const editable = Boolean(editKeys) && context.canEdit(placed)
+  const id = useId()
 
   const keyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
     const edit = editable && !event.altKey && !event.metaKey && !event.ctrlKey && !(event.shiftKey && !context.canResize(placed)) ? keyEdit(readingKey(event.key, event.currentTarget), event.shiftKey, editKeys!, placed, context.snapMinutes) : null
@@ -53,8 +58,7 @@ export function EventButton({ placed, variant, editKeys, className, style, tabIn
         data-tone={toneAttribute(placed)}
         data-event-id={placed.id}
         data-editable={editable ? "" : undefined}
-        aria-label={eventName(placed, context)}
-        aria-description={editable ? context.t.editHint : undefined}
+        aria-describedby={editable ? `${id}-what ${id}-edit` : `${id}-what`}
         tabIndex={tabIndex}
         style={style}
         onPointerDown={editable ? onPointerDown : undefined}
@@ -63,6 +67,14 @@ export function EventButton({ placed, variant, editKeys, className, style, tabIn
         {...data}
       >
         {children}
+        <span id={`${id}-what`} hidden>
+          {eventName(placed, context)}
+        </span>
+        {editable ? (
+          <span id={`${id}-edit`} hidden>
+            {context.t.editHint}
+          </span>
+        ) : null}
       </button>
     </EventMenu>
   )

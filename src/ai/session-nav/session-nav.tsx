@@ -84,7 +84,8 @@ export interface SessionNavProps {
    * Draw a session's row yourself, such as its EntityIdentity at the row tier with the session's
    * state and organisation, in place of the title, organisation code and state. The row stays the
    * nav's: selection, the current marker, rename, right-click and ⋯ work as before, and its
-   * accessible name is still the session's. Draw nothing interactive here (the row is a button);
+   * accessible name is still the session's title, so draw the title in it: speech input names a
+   * control by what it shows (WCAG 2.5.3). Draw nothing interactive here (the row is a button);
    * `renderOrganisation` is the place for a chip with actions. Return undefined for the default.
    */
   renderSession?: (session: AiSession) => ReactNode;
@@ -389,6 +390,20 @@ export function SessionNav({
     const drawn = organisation !== undefined;
     const custom = renderSession?.(session);
     const own = custom !== undefined;
+    // What the row does not show in its own text: the organisation's full name (it shows a
+    // code, or the host's slot sits outside the row), and the state and unread wherever the
+    // row's dot does not say them.
+    const inRow = !drawn && !own;
+    // In the row, the dot says "waiting for you" or "run failed", or otherwise "unread".
+    const dotSaysUnread = inRow && session.unread && session.activity !== "working" && session.activity !== "prompt" && session.activity !== "error";
+    const context = listFormat(locale, { type: "unit" }).format(
+      [
+        session.organisation !== undefined ? (session.organisation ? session.organisation.label : messages.allScopes) : "",
+        inRow && session.activity !== "done" ? "" : (status?.toLowerCase() ?? ""),
+      ].filter(Boolean),
+    );
+    const unreadUnsaid = session.unread && !dotSaysUnread;
+    const describeSession = () => (unreadUnsaid ? (context ? messages.unreadLabel(context) : messages.unread) : context);
     return (
       <li
         key={session.id}
@@ -415,7 +430,11 @@ export function SessionNav({
             selected={active}
             className="fa-ai-session-row"
             aria-current={active ? "page" : undefined}
-            aria-label={(session.unread ? messages.unreadLabel : (label: string) => label)(listFormat(locale, { type: "unit" }).format([session.title, session.organisation !== undefined ? session.organisation ? session.organisation.label : messages.allScopes : "", status?.toLowerCase() ?? ""].filter(Boolean)))}
+            // Named by what the row shows (WCAG 2.5.3): the title, the organisation's code, the
+            // state and the time. The organisation's full name and unread go in the description.
+            // A host's own drawing keeps the session's title as the name: draw the title in it.
+            aria-label={own ? session.title : undefined}
+            aria-description={describeSession() || undefined}
             data-unread={session.unread ? "" : undefined}
             onClick={(event) =>
               select(session.id, {

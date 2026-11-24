@@ -252,8 +252,9 @@ export interface StatusBarItemProps extends Omit<ComponentProps<"span">, "onClic
 
 /**
  * One fact in the bar; items are joined with "·". With `onClick`, or when a menu or popover
- * trigger renders it, it is a button (name it with `aria-label` when the visible value alone
- * does not say what it does). A ranked item keeps its handlers in the More popup.
+ * trigger renders it, it is a button named by what it shows ("Page 12 of 48"); say what it
+ * does with `aria-description` ("Go to page"), not an `aria-label` that drops the visible text
+ * (WCAG 2.5.3). A ranked item keeps its handlers in the More popup.
  */
 function Item({ tone, giveWay, onClick, disabledReason, className, children, ref, ...rest }: StatusBarItemProps) {
   const bar = use(GiveWayContext)
@@ -268,11 +269,15 @@ function Item({ tone, giveWay, onClick, disabledReason, className, children, ref
   const gaveWay = bar !== null && giveWay !== undefined && giveWay <= bar.level
   const host = gaveWay ? bar.host : null
   const interactive = onClick !== undefined || rest["aria-haspopup"] !== undefined
-  const refs = (node: HTMLElement | null) => {
-    setElement(node)
-    if (typeof ref === "function") return ref(node)
-    if (ref) ref.current = node
-  }
+  // Stable, so React does not detach and attach it (setting state each time) on every commit.
+  const refs = useCallback(
+    (node: HTMLElement | null) => {
+      setElement(node)
+      if (typeof ref === "function") return ref(node)
+      if (ref) ref.current = node
+    },
+    [ref],
+  )
   const body = (
     <>
       {tone ? <StatusDot status={TONE_STATUS[tone]} /> : null}

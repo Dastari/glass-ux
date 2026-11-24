@@ -183,7 +183,7 @@ test("JSON tree supports parent-child keys, typeahead and one tab stop @responsi
     name: "Sample exhibition configuration",
   });
   const root = tree.getByRole("treeitem", {
-    name: "object, 4 keys",
+    name: "4 keys, object",
     exact: true,
   });
   await root.focus();
@@ -193,7 +193,7 @@ test("JSON tree supports parent-child keys, typeahead and one tab stop @responsi
   ).toBeFocused();
   await page.keyboard.press("a");
   const access = tree.getByRole("treeitem", {
-    name: "access: object, 1 key",
+    name: "access: 1 key, object",
     exact: true,
   });
   await expect(access).toBeFocused();

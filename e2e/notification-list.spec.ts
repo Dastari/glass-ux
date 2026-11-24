@@ -147,7 +147,9 @@ test("host groups and a host filter", async ({ page }) => {
 
 test("AccountButton and the rail open it, keep their own behaviour, and take focus back @responsive", async ({ page }) => {
   const specimen = page.getByRole("region", { name: /With AccountButton and the rail$/ }).first();
-  const account = specimen.getByRole("button", { name: "Account: Avery Quinn, 3 unread notifications", exact: true });
+  // The account button is named by what it shows; the unread count is in its description.
+  const account = specimen.getByRole("button", { name: /^Avery Quinn/ }).and(specimen.locator(".fa-shell-account"));
+  await expect(account).toHaveAccessibleDescription("Account: Avery Quinn, 3 unread notifications");
   await account.click();
   await expect(page.getByRole("menu")).toBeVisible();
   await page.getByRole("menuitem", { name: "Notifications" }).click();

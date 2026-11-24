@@ -79,9 +79,11 @@ export function hostOf(href: string) {
 
 /** Accessible name for an entity reference: "Endpoint NST-C106, online". */
 export function entityName(kinds: EntityKinds, ref: EntityRef, messages: ReturnType<typeof getAiMessages> = getAiMessages()) {
+  // The visible text (label, meta, state) in the order it shows, so speech input finds it in
+  // the name (WCAG 2.5.3); the status, shown only as a dot, comes last.
   const parts = [`${kindSpec(kinds, ref.kind, messages).noun} ${ref.label}`]
-  if (ref.status) parts.push(ref.status)
   if (ref.meta) parts.push(ref.meta)
   if (ref.state) parts.push(ref.state.label)
+  if (ref.status) parts.push(ref.status)
   return parts.join(", ")
 }

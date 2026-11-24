@@ -13,6 +13,7 @@ the shortcut triggers, not here.
 
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
+| drawn | `boolean \| undefined` | false, true | no | false | Draw the keys with CSS rather than as text, hidden from assistive technology: for a hint inside a control that says its shortcut with `aria-keyshortcuts`, so the hint is not visible text that the control's name would have to repeat (WCAG 2.5.3). |
 | keys | `string` | See type | yes | — | A shortcut such as "mod+k", "mod+shift+r", "shift+f10", a single key ("esc") or a chord, whose steps are separated by a space ("mod+k mod+s"). |
 | size | `"sm" \| "md" \| undefined` | "sm", "md" | no | "md" | The token-based size. Touch targets adapt to coarse pointers independently of the selected density. |
 | variant | `"text" \| "keys" \| undefined` | "text", "keys" | no | "keys" | `keys` draws keycaps (help text, palette hints). `text` is the quiet inline form used at the trailing edge of menu and palette rows. |

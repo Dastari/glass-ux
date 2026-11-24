@@ -56,7 +56,10 @@ test("what gave way is in More, with its button still working", async ({ page })
   await more.click();
   const popup = page.locator(".fa-status-bar-overflow");
   await expect(popup).toContainText("4,210 words");
-  await expect(popup.getByRole("button", { name: "Go to page" })).toBeVisible();
+  // Named by what it shows; what it does is its description (WCAG 2.5.3).
+  const page12 = popup.getByRole("button", { name: "Page 12 of 48" });
+  await expect(page12).toBeVisible();
+  await expect(page12).toHaveAccessibleDescription("Go to page");
   await page.keyboard.press("Escape");
   await expect(more).toBeFocused();
 });

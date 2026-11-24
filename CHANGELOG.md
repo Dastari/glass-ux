@@ -4,6 +4,51 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.19.12
+
+### Changed
+
+- Label in Name (WCAG 2.5.3, #31, #34): a control's accessible name now holds the text it shows, in
+  order, so speech input reaches it by what it says. axe 4.14's `label-content-name-mismatch` passes
+  across the catalogue, the templates and the browser suite. Renamed controls (see the migration guide):
+  - AccountButton is named by the name and email it shows; "Account: …" and the unread count are its
+    description. Where a narrow bar hides the text, the name still comes from it.
+  - Scheduler events are named by their visible title and time, with what, when and where in full
+    (and how to edit them) as their description. Day column heads, the phone day strip and timeline
+    day heads are named by what they show ("Mon 23"), with the full date as their description.
+  - SessionNav rows are named by what the row shows (title, organisation code, state and time); the
+    organisation's full name and "unread" are the description. A row drawn by `renderSession` keeps
+    the session's title as its name.
+  - Tool activity rows are named by their label (a group by its summary, "Ran 4 tools · 1 failed"),
+    with their status as the description; the ticking time stays out of the name.
+  - EntityIdentity rows that open are named by their name and second line, with the kind and state as
+    their description. EntityChip names list the visible meta and state before the status.
+  - JsonTree branches read "config: 4 keys, object" (what the row shows, then the kind), and each
+    treeitem holds only its own row, owning its children's group; "Show more" rows are named by their
+    button's text.
+  - RelationshipCanvas cards: the option is the card's header, named by its title and count
+    ("Post 5"); the rows stay its description, and the focus ring still goes round the whole card.
+  - A full LevelGauge that opens its explanation keeps its name as hidden text rather than
+    `aria-label`.
+- Avatar initials and overlay CountBadges are drawn by CSS (`data-initials`, `data-count`), as a picture
+  of the name or count on another control's face, so they are not text that control's name must repeat.
+- Kbd takes `drawn` for a shortcut hint inside a control that says its shortcut with
+  `aria-keyshortcuts`; the shell search hint uses it. RichTextInput's numbered-list glyph is drawn too.
+- StatusBar's guidance: an item that is a button is named by what it shows, and says what it does with
+  `aria-description`.
+- `@axe-core/playwright` 4.14 for the browser suite (held at 4.13 in 0.19.10 for these findings).
+
+### Fixed
+
+- Workspace no longer re-renders itself on every commit from its stage ref, which could end in React
+  #185 (Maximum update depth exceeded) on a route change (#35). StatusBar items, TransferList's
+  reorderable list and the Tabs bar had the same unstable ref that set state, and are stable too.
+- MediaPlayer's announcer no longer replaces "Playing" with a volume it has already said when playback
+  starts; a later change replaces a volume not yet announced.
+- Browser tests that failed under load wait for the state they check (#33): the colour wheel's bead
+  contrast, the menubar's right-to-left keys, the comment thread's pending state, the media player's
+  shortcuts, and the Tree's clicks, which waited for the page above the demo to stop moving.
+
 ## 0.19.11
 
 ### Added

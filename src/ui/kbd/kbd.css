@@ -23,6 +23,10 @@
     /* component token: a keycap that fits inside a dense row */
     --_h: 1.25rem;
   }
+  /* drawn: the keys as generated content, not text (see Kbd's drawn prop). */
+  :is(.fa-kbd, .fa-kbd-key)[data-drawn]::before {
+    content: attr(data-drawn);
+  }
   .fa-kbd-key {
     display: inline-grid;
     place-items: center;

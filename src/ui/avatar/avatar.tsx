@@ -73,9 +73,9 @@ export function Avatar({ name, src, size = "md", presence, decorative = false, c
     >
       <BaseAvatar.Root className="fa-avatar-face" data-tint={tintFor(name)}>
         {src ? <BaseAvatar.Image className="fa-avatar-image" src={src} alt="" /> : null}
-        <BaseAvatar.Fallback className="fa-avatar-initials" delay={src ? 400 : 0}>
-          {initials(name)}
-        </BaseAvatar.Fallback>
+        {/* Drawn by CSS from data-initials: a picture of the name, like the photo, so it is not
+            text that a control's name must repeat (WCAG 2.5.3). The avatar's name is the name. */}
+        <BaseAvatar.Fallback className="fa-avatar-initials" delay={src ? 400 : 0} data-initials={initials(name)} />
       </BaseAvatar.Root>
       {spec ? <span className="fa-status-dot" data-overlay="" data-tone={spec.tone} data-marker={spec.marker} aria-hidden /> : null}
     </span>
@@ -111,7 +111,7 @@ export function AvatarGroup({ people, max = 4, size = "sm", className, ...rest }
           title={listFormat(locale, { type: "unit" }).format(others.map((person) => person.name))}
         >
           <span className="fa-avatar-face" data-tint="neutral">
-            <span className="fa-avatar-initials">+{others.length}</span>
+            <span className="fa-avatar-initials" data-initials={`+${others.length}`} />
           </span>
         </span>
       ) : null}

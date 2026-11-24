@@ -483,7 +483,7 @@ function TimelineBody({ events, days }: TimelineViewProps) {
                   return (
                     <Tag
                       key={day}
-                      {...(opensDay ? { type: "button" as const, onClick: () => (context.setDate(day), context.setView("day")), "aria-label": formatDay(day, locale) } : {})}
+                      {...(opensDay ? { type: "button" as const, onClick: () => (context.setDate(day), context.setView("day")), "aria-description": formatDay(day, locale) } : {})}
                       className="fa-sch-tl-day"
                       style={{ "--_first": index + 1 } as CSSProperties}
                       data-today={day === today ? "" : undefined}
@@ -491,7 +491,7 @@ function TimelineBody({ events, days }: TimelineViewProps) {
                       data-month-start={parts?.day === 1 && index > 0 ? "" : undefined}
                       aria-current={day === today ? "date" : undefined}
                     >
-                      {compact ? null : <span className="fa-sch-tl-day-weekday">{label}</span>}
+                      {compact ? null : <><span className="fa-sch-tl-day-weekday">{label}</span>{" "}</>}
                       <span className="fa-sch-tl-day-number">{compact ? formatDay(day, locale) : narrow ? dayNumber.format(fromIsoDate(day)) : `${dayNumber.format(fromIsoDate(day))} ${monthShort.format(fromIsoDate(day))}`}</span>
                     </Tag>
                   )

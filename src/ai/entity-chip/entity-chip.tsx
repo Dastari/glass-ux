@@ -65,15 +65,23 @@ function ChipInner({
         <EntityGlyph entity={entity} className="fa-ai-chip-glyph" />
       ) : null}
       <TruncatedText className="fa-ai-chip-label">{entity.label}</TruncatedText>
+      {/* The spaces take no room in the flex row; they keep the parts separate words in the
+          visible text that speech input and Label in Name (WCAG 2.5.3) compare with the name. */}
       {entity.meta ? (
-        <span className="fa-ai-chip-meta" data-numeric>
-          {entity.meta}
-        </span>
+        <>
+          {" "}
+          <span className="fa-ai-chip-meta" data-numeric>
+            {entity.meta}
+          </span>
+        </>
       ) : null}
       {entity.state ? (
-        <span className="fa-ai-chip-meta" data-tone={entity.state.tone}>
-          {entity.state.label}
-        </span>
+        <>
+          {" "}
+          <span className="fa-ai-chip-meta" data-tone={entity.state.tone}>
+            {entity.state.label}
+          </span>
+        </>
       ) : null}
     </>
   );

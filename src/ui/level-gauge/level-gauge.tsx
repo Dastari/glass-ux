@@ -107,7 +107,11 @@ export function LevelGauge<V extends string = string>({
         {note || earlier ? (
           <span className="fa-level-gauge-note">
             {earlier ? <span aria-hidden>{messages.previousLine({ previousLabel: priorName, previous: earlier.label })}</span> : null}
-            {note ? <span id={noteId}>{note}</span> : null}
+            {note ? (
+              <span id={noteId} aria-hidden={onPress ? true : undefined}>
+                {note}
+              </span>
+            ) : null}
           </span>
         ) : null}
         {segments}
@@ -133,7 +137,11 @@ export function LevelGauge<V extends string = string>({
   }
   if (onPress)
     return (
-      <BaseButton {...shared} className={cx(shared.className, "fa-pressable")} data-pressable="" aria-label={name} aria-describedby={size === "md" && note ? noteId : undefined} onClick={onPress}>
+      // The full gauge carries more visible text than its name (its note and scale), so its
+      // name is hidden text, not aria-label (WCAG 2.5.3); it starts with the visible label and
+      // level. The note is its description.
+      <BaseButton {...shared} className={cx(shared.className, "fa-pressable")} data-pressable="" aria-label={size === "md" ? undefined : name} aria-describedby={size === "md" && note ? noteId : undefined} onClick={onPress}>
+        {size === "md" ? <span className="sr-only">{name}</span> : null}
         {body}
       </BaseButton>
     )

@@ -31,6 +31,12 @@ export interface KbdProps extends Omit<ComponentProps<"kbd">, "children"> {
    */
   variant?: "keys" | "text"
   size?: "sm" | "md"
+  /**
+   * Draw the keys with CSS rather than as text, hidden from assistive technology: for a hint
+   * inside a control that says its shortcut with `aria-keyshortcuts`, so the hint is not
+   * visible text that the control's name would have to repeat (WCAG 2.5.3).
+   */
+  drawn?: boolean
 }
 
 /**
@@ -39,25 +45,25 @@ export interface KbdProps extends Omit<ComponentProps<"kbd">, "children"> {
  * The text is announced in its platform form; `aria-keyshortcuts` belongs on the control
  * the shortcut triggers, not here.
  */
-export function Kbd({ keys, variant = "keys", size = "md", className, ...rest }: KbdProps) {
+export function Kbd({ keys, variant = "keys", size = "md", drawn = false, className, ...rest }: KbdProps) {
   const messages = useMessages(kbdMessages)
   const platform = usePlatform()
   if (variant === "text") {
     return (
-      <kbd {...rest} className={cx("fa-kbd", className)} data-variant="text">
-        {formatShortcut(keys, platform, messages)}
+      <kbd {...rest} className={cx("fa-kbd", className)} data-variant="text" aria-hidden={drawn || rest["aria-hidden"]} data-drawn={drawn ? formatShortcut(keys, platform, messages) : undefined}>
+        {drawn ? null : formatShortcut(keys, platform, messages)}
       </kbd>
     )
   }
   const caps = (shortcut: string) =>
     shortcutKeys(shortcut, platform, messages).map((cap, index) => (
-      <kbd key={`${cap}-${index}`} className="fa-kbd-key">
-        {cap}
+      <kbd key={`${cap}-${index}`} className="fa-kbd-key" data-drawn={drawn ? cap : undefined}>
+        {drawn ? null : cap}
       </kbd>
     ))
   const steps = shortcutSteps(keys)
   return (
-    <kbd {...rest} className={cx("fa-kbd", className)} data-variant="keys" data-size={size} data-chord={steps.length > 1 ? "" : undefined}>
+    <kbd {...rest} className={cx("fa-kbd", className)} data-variant="keys" data-size={size} data-chord={steps.length > 1 ? "" : undefined} aria-hidden={drawn || rest["aria-hidden"]}>
       {steps.length > 1
         ? steps.map((step, index) => (
             <span key={`${step}-${index}`} className="fa-kbd-step">

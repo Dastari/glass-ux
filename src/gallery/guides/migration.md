@@ -3,6 +3,34 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.19.11 → 0.19.12
+
+No code edits are needed in applications. Tests that find these controls by role and name need the
+new names (WCAG 2.5.3: a name holds the text the control shows):
+
+| Control | Was named | Now named | Moved to the description |
+| --- | --- | --- | --- |
+| AccountButton | "Account: Avery Quinn, 3 unread notifications" | "Avery Quinn avery.quinn@orbit.example" (name, then email when shown) | "Account: Avery Quinn, 3 unread notifications" |
+| Scheduler event (week, day, month, agenda) | "Pump check, Wednesday 28 October, 9:00 am to 10:30 am, Pump house" | its visible title and time, in the order shown ("Pump check 9:00 – 10:30 am") | the full sentence, then the edit hint |
+| Scheduler day column head, day strip, timeline day head | "Monday 23 November" | "Mon 23" (what it shows) | "Monday 23 November" |
+| SessionNav row | "Title, Northstar Studio, waiting for you" | title, organisation code, state, time | organisation's full name, "unread" |
+| Tool activity row | "List printers, done" / "Ran 4 tools, 1 failed" | "List printers" / "Ran 4 tools · 1 failed" | the status |
+| EntityIdentity row that opens | "Organisation Northstar Studio, Active" | its name and second line | "Organisation, Active" |
+| EntityChip | "Endpoint NST-C106, online, 2.1" | "Endpoint NST-C106, 2.1, online" (status last) | – |
+| JsonTree branch | "config: object, 4 keys" | "config: 4 keys, object" | – |
+| JsonTree "Show more" row | "Show more of config" | its button's text ("Show 40 more of 1,284") | – |
+| RelationshipCanvas card | the whole card was the option, "Post" | the header is the option, "Post 5" | the rows and links, as before |
+
+Behaviour to review:
+
+- Avatar initials and overlay CountBadges (`overlay`) have no text content any more: CSS draws them from
+  `data-initials` and `data-count`. A test that reads their text reads those attributes instead.
+- RelationshipCanvas: `[role="option"]` is the card's header inside `[data-card-id]`; move a card or read
+  its position on the `[data-card-id]` element.
+- If you name a StatusBar item (or any control) with an `aria-label` that drops its visible text, say what
+  it does with `aria-description` instead, so speech input still reaches it by what it shows.
+- A Kbd hint inside your own control that says its shortcut with `aria-keyshortcuts` can take `drawn`.
+
 ## 0.19.10 → 0.19.11
 
 No code edits are needed.

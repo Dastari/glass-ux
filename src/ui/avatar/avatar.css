@@ -85,6 +85,9 @@
     height: 100%;
     object-fit: cover;
   }
+  .fa-avatar-initials::before {
+    content: attr(data-initials);
+  }
   .fa-avatar-initials {
     grid-area: 1 / 1;
     font-size: calc(var(--_size) * 0.38);

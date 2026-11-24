@@ -213,8 +213,14 @@ instead (a `needs-owner` label and a comment). The local route:
   Check `docker ps` before trusting a run of blank-page failures. Running Playwright inside a private
   network namespace avoids it: `unshare -rn sh -c 'ip link set lo up && … pnpm exec playwright test …'`.
   The namespace has no internet, so run `maps-basemap.spec.ts` outside it.
-- Held dependencies: TypeScript stays on 6.0 until typedoc supports 7 (#32); `@axe-core/playwright`
-  stays on 4.13 until the Label in Name findings that 4.14 reports are fixed (#31).
+- Held dependencies: TypeScript stays on 6.0 until typedoc supports 7 (#32).
+- Label in Name (axe 4.14, WCAG 2.5.3): axe reads visible text from DOM text nodes joined with no
+  space between elements, counts `aria-hidden` text, and skips visually hidden text and CSS
+  `content`. So a control with `aria-label` needs its visible text in the name, in order, and real
+  spaces between adjacent pieces; the rule does not apply to a control with no `aria-label` or
+  `aria-labelledby`. The library's recipe: name rich rows by their content and give the rest as
+  `aria-description`; draw marks that picture something else (initials, overlay counts, a shortcut
+  hint, a text glyph) with CSS from a data attribute.
 - Next.js support is verified with webpack (`pnpm test:next`), not Turbopack; forced colours
   only with Chromium's emulation, not Windows High Contrast itself.
 

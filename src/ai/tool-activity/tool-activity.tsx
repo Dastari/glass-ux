@@ -80,7 +80,8 @@ function elapsedTickDelay(value: number) {
 
 /**
  * Elapsed time that ticks while the work runs (tabular, so it never changes width).
- * `hidden` keeps a ticking value out of a live region so it is not announced every second.
+ * `hidden` keeps the value out of a row's name and out of a live region, so a ticking time is
+ * not announced every second.
  */
 function Elapsed({ ms, running, hidden }: { ms?: number; running: boolean; hidden?: boolean }) {
   const [started] = useState(() => Date.now() - (ms ?? 0));
@@ -293,9 +294,11 @@ export function ToolCallRow({
       data-status={call.status}
       defaultOpen={defaultOpen}
     >
+      {/* Named by what the row shows (WCAG 2.5.3), its status as its description; the
+          ticking time stays out of the name. */}
       <Collapsible.Trigger
         className="fa-ai-tool-row"
-        aria-label={messages.rowLabel({ label, status: getSTATUS_WORDS(messages)[call.status] })}
+        aria-description={getSTATUS_WORDS(messages)[call.status]}
       >
         <StatusGlyph status={call.status} />
         <span className="fa-ai-tool-text">
@@ -320,7 +323,7 @@ export function ToolCallRow({
             ) : null}
           </span>
         ) : null}
-        <Elapsed ms={call.elapsedMs} running={running} />
+        <Elapsed ms={call.elapsedMs} running={running} hidden />
         <IconChevronRight className="fa-ai-tool-chevron" />
         {running ? (
           <Progress
@@ -391,10 +394,7 @@ export function ToolGroup({
       data-status={status}
       defaultOpen={defaultOpen}
     >
-      <Collapsible.Trigger
-        className="fa-ai-tool-row"
-        aria-label={failed ? messages.failedSummary(label, failed) : label}
-      >
+      <Collapsible.Trigger className="fa-ai-tool-row">
         <StatusGlyph status={status} />
         <span className="fa-ai-tool-text">
           <span className="fa-ai-tool-label">
@@ -419,9 +419,9 @@ export function ToolGroup({
           })}
         </span>
         {status === "running" ? (
-          <Elapsed running />
+          <Elapsed running hidden />
         ) : total ? (
-          <Elapsed ms={total} running={false} />
+          <Elapsed ms={total} running={false} hidden />
         ) : null}
         <IconChevronRight className="fa-ai-tool-chevron" />
         {status === "running" ? (

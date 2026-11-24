@@ -11,7 +11,8 @@ const sessions: AiSession[] = [
   { id: "s-1", title: "Sample one", lastActivityAt: now, activity: "idle" },
   { id: "s-2", title: "Sample two", lastActivityAt: now - 1000, activity: "idle" },
 ];
-const rowOf = (title: string) => screen.getByRole("button", { name: title });
+// A row is named by what it shows: its title, then its state and time.
+const rowOf = (title: string) => screen.getByRole("button", { name: new RegExp(`^${title}(?! of)`) });
 
 describe("SessionNav selection", () => {
   it("marks the clicked session current when uncontrolled and reports it once", () => {

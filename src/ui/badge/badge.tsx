@@ -144,9 +144,12 @@ export function countText(value: number, locale: string, max = 999): string {
 /** A number beside a navigation item or group ("Endpoints 12"), or on a corner (overlay). Tabular figures. */
 export function CountBadge({ value, max = 999, tone = "neutral", overlay = false, className, ...rest }: CountBadgeProps) {
   const text = countText(value, useLocale(), max)
+  // An overlay is drawn by CSS from data-count: a mark on another control's face (an avatar,
+  // a rail icon, a tile), which says the count in its own name; text there would have to be
+  // repeated in that name (WCAG 2.5.3). Beside a label, the count is text and part of the name.
   return (
-    <span {...rest} className={cx("fa-count", className)} data-tone={tone} data-overlay={overlay ? "" : undefined} data-numeric>
-      {text}
+    <span {...rest} className={cx("fa-count", className)} data-tone={tone} data-overlay={overlay ? "" : undefined} data-count={overlay ? text : undefined} data-numeric>
+      {overlay ? null : text}
     </span>
   )
 }

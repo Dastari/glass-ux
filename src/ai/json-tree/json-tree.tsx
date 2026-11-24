@@ -1,7 +1,7 @@
 import { readingKey } from "../../lib/direction.js"
 import { useMessages } from "../../lib/i18n/index.js"
 import { jsonTreeMessages, getJsonTreeMessages } from "./messages.js"
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { IconChevronRight } from "../../icons/generated/icons.js";
 import { cx } from "../../lib/cx.js";
 import { Button } from "../../ui/button/index.js";
@@ -65,8 +65,11 @@ function Node({
   const [open, setOpen] = useState(depth < OPEN_DEPTH);
   const [shown, setShown] = useState(PAGE);
   const locale = useLocale();
-  const rowRef = useRef<HTMLLIElement>(null);
-  const accessibleName = `${name !== undefined ? `${name}: ` : ""}${branch ? `${kind}, ${summary(value as Json[] | Record<string, Json>, locale)}` : String(value)}`;
+  const rowRef = useRef<HTMLDivElement>(null);
+  const groupId = useId();
+  // What the row shows, in order ("config: 4 keys"), then the kind: speech input names a row by
+  // its visible text (WCAG 2.5.3).
+  const accessibleName = `${name !== undefined ? `${name}: ` : ""}${branch ? `${summary(value as Json[] | Record<string, Json>, locale)}, ${kind}` : String(value)}`;
 
   const key =
     name !== undefined ? (
@@ -101,80 +104,90 @@ function Node({
       ? (value as Json[]).map((item, index) => [index, item] as const)
       : Object.entries(value as Record<string, Json>);
   const brackets = kind === "array" ? ["[", "]"] : ["{", "}"];
+  // The treeitem holds only its own row and owns its children's group, so its text is the
+  // row's alone: a treeitem that contained its subtree would show every descendant's text.
   return (
-    <li
-      ref={rowRef}
-      className="fa-ai-json-row"
-      role="treeitem"
-      tabIndex={depth === 0 ? 0 : -1}
-      aria-label={accessibleName}
-      aria-expanded={open}
-    >
-      <Button
-        variant="ghost"
-        size="xs"
-        className="fa-ai-json-toggle"
-        tabIndex={-1}
-        tooltip={false}
-        aria-label={open ? messages.collapseNode(name ?? messages.root) : messages.expandNode(name ?? messages.root)}
-        onClick={() => {
-          rowRef.current?.focus();
-          setOpen((current) => !current);
-        }}
+    <li className="fa-ai-json-node" role="none">
+      <div
+        ref={rowRef}
+        className="fa-ai-json-row"
+        role="treeitem"
+        tabIndex={depth === 0 ? 0 : -1}
+        aria-label={accessibleName}
+        aria-expanded={open}
+        aria-owns={open ? groupId : undefined}
       >
-        <IconChevronRight data-open={open ? "" : undefined} />
-      </Button>
-      {key}
-      <span className="fa-ai-json-punct">{brackets[0]}</span>
-      {open ? null : (
-        <>
-          <span className="fa-ai-json-summary">
-            {summary(value as Json[] | Record<string, Json>, locale)}
-          </span>
-          <span className="fa-ai-json-punct">{brackets[1]}</span>
-        </>
-      )}
-      {open ? (
-        <>
-          <ul className="fa-ai-json-children" role="group">
-            {entries.slice(0, shown).map(([childKey, child]) => (
-              <Node
-                key={childKey}
-                name={childKey}
-                value={child}
-                depth={depth + 1}
-              />
-            ))}
-            {entries.length > shown ? (
-              <li
-                className="fa-ai-json-row"
-                role="treeitem"
-                tabIndex={-1}
-                aria-label={messages.showMoreOf(name ?? messages.root)}
-              >
-                <span className="fa-ai-json-spacer" />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="fa-ai-json-more"
-                  tabIndex={-1}
-                  onClick={() => {
-                    rowRef.current?.focus();
-                    setShown((count) => count + PAGE * 5);
-                  }}
-                >
-                  {messages.showMoreOfTotal(formatNumber(Math.min(entries.length - shown, PAGE * 5), 0, locale), formatNumber(entries.length, 0, locale))}
-                </Button>
-              </li>
-            ) : null}
-          </ul>
-          <span className="fa-ai-json-close">
+        <Button
+          variant="ghost"
+          size="xs"
+          className="fa-ai-json-toggle"
+          tabIndex={-1}
+          tooltip={false}
+          aria-label={open ? messages.collapseNode(name ?? messages.root) : messages.expandNode(name ?? messages.root)}
+          onClick={() => {
+            rowRef.current?.focus();
+            setOpen((current) => !current);
+          }}
+        >
+          <IconChevronRight data-open={open ? "" : undefined} />
+        </Button>
+        {key}
+        <span className="fa-ai-json-punct">{brackets[0]}</span>
+        {open ? null : (
+          <>
+            <span className="fa-ai-json-summary">
+              {summary(value as Json[] | Record<string, Json>, locale)}
+            </span>
             <span className="fa-ai-json-punct">{brackets[1]}</span>
-          </span>
-        </>
-      ) : null}
+          </>
+        )}
+      </div>
+        {open ? (
+          <>
+            <ul id={groupId} className="fa-ai-json-children" role="group">
+              {entries.slice(0, shown).map(([childKey, child]) => (
+                <Node
+                  key={childKey}
+                  name={childKey}
+                  value={child}
+                  depth={depth + 1}
+                />
+              ))}
+              {entries.length > shown ? (
+                <li
+                  className="fa-ai-json-row"
+                  role="treeitem"
+                  tabIndex={-1}
+                >
+                  <span className="fa-ai-json-spacer" />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="fa-ai-json-more"
+                    tabIndex={-1}
+                    onClick={() => {
+                      rowRef.current?.focus();
+                      setShown((count) => count + PAGE * 5);
+                    }}
+                  >
+                    {messages.showMoreOfTotal(formatNumber(Math.min(entries.length - shown, PAGE * 5), 0, locale), formatNumber(entries.length, 0, locale))}
+                  </Button>
+                </li>
+              ) : null}
+            </ul>
+            <span className="fa-ai-json-close">
+              <span className="fa-ai-json-punct">{brackets[1]}</span>
+            </span>
+          </>
+        ) : null}
     </li>
   );
+}
+
+/** The treeitem that owns the group a row sits in. */
+function parentRow(tree: HTMLElement, row: HTMLElement) {
+  const group = row.parentElement?.closest<HTMLElement>("[role=group]");
+  return group?.id ? tree.querySelector<HTMLElement>(`[aria-owns="${CSS.escape(group.id)}"]`) : null;
 }
 
 export interface JsonTreeProps {
@@ -245,9 +258,9 @@ export function JsonTree({
                 ?.click();
             } else
               focus(
-                current.querySelector<HTMLElement>(
-                  ":scope > [role=group] > [role=treeitem]",
-                ),
+                current.ownerDocument
+                  .getElementById(current.getAttribute("aria-owns") ?? "")
+                  ?.querySelector<HTMLElement>("[role=treeitem]"),
               );
           } else if (key === "ArrowLeft") {
             if (current.getAttribute("aria-expanded") === "true") {
@@ -256,9 +269,7 @@ export function JsonTree({
                 .querySelector<HTMLButtonElement>(":scope > button")
                 ?.click();
             } else
-              focus(
-                current.parentElement?.closest<HTMLElement>("[role=treeitem]"),
-              );
+              focus(parentRow(event.currentTarget, current));
           } else if (key === "Enter" || event.key === " ") {
             const button =
               current.querySelector<HTMLButtonElement>(":scope > button");

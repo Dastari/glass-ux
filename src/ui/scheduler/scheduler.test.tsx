@@ -28,10 +28,11 @@ describe("Scheduler", () => {
     expect(within(menu).getByRole("menuitem", { name: "Open job" })).toBeTruthy()
   })
 
-  it("names every event with its time and resource", () => {
+  it("names every event by what it shows and describes it with its time and resource", () => {
     renderScheduler()
-    expect(screen.getByRole("button", { name: /^Pump check, Wednesday,? 28 October, 9:00\s?am to 10:30\s?am, Pump house$/ })).toBeTruthy()
-    expect(screen.getByRole("button", { name: /^Audit, Tue,? 27 Oct to Wed,? 28 Oct, all day$/ })).toBeTruthy()
+    // The name is the visible title and time (WCAG 2.5.3); the description says it in full.
+    expect(screen.getByRole("button", { name: /^Pump check ?9:00\s?(am)?\s?[–-]\s?10:30\s?am$/, description: /^Pump check, Wednesday,? 28 October, 9:00\s?am to 10:30\s?am, Pump house$/ })).toBeTruthy()
+    expect(screen.getByRole("button", { name: "Audit", description: /^Audit, Tue,? 27 Oct to Wed,? 28 Oct, all day$/ })).toBeTruthy()
   })
 
   it("switches views and moves by the view's step", () => {
@@ -66,7 +67,7 @@ describe("Scheduler", () => {
     expect(change.start.toISOString()).toBe("2026-10-27T22:15:00.000Z")
     expect(change.end.toISOString()).toBe("2026-10-27T23:45:00.000Z")
     // Shown at its new time at once, and announced.
-    expect(screen.getByRole("button", { name: /^Pump check, Wednesday,? 28 October, 9:15\s?am to 10:45\s?am/ })).toBeTruthy()
+    expect(screen.getByRole("button", { name: /^Pump check/, description: /^Pump check, Wednesday,? 28 October, 9:15\s?am to 10:45\s?am/ })).toBeTruthy()
   })
 
   it("shows placeholders while loading and keeps the header", () => {

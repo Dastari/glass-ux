@@ -35,6 +35,7 @@ import { TruncatedText } from "../ui/truncated-text/index.js";
 import {
   useCallback,
   useContext,
+  useId,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -370,7 +371,8 @@ export function SearchTrigger({
     >
       <IconSearch />
       <span className="fa-shell-search-placeholder">{placeholder}</span>
-      <Kbd className="fa-shell-search-kbd" keys={shortcut} size="sm" />
+      {/* The shortcut is aria-keyshortcuts; the hint is drawn, so the name holds all the visible text. */}
+      <Kbd className="fa-shell-search-kbd" keys={shortcut} size="sm" drawn />
     </button>
   );
 }
@@ -499,11 +501,15 @@ export function AccountButton({
   ...rest
 }: AccountButtonProps) {
   const messages = useMessages(shellMessages)
+  const textId = useId()
 
   return (
+    // Named by what it shows, the name and email (WCAG 2.5.3), through labelledby so the name
+    // holds where a narrow bar hides the text; "Account" and the unread count are its description.
     <button
       type="button"
-      aria-label={messages.account(name, unread)}
+      aria-labelledby={rest["aria-label"] ? undefined : textId}
+      aria-description={messages.account(name, unread)}
       {...rest}
       className={cx("fa-shell-account fa-pressable", className)}
     >
@@ -520,9 +526,14 @@ export function AccountButton({
           />
         ) : null}
       </span>
-      <span className="fa-shell-account-text">
+      <span id={textId} className="fa-shell-account-text">
         <TruncatedText className="fa-shell-account-name">{name}</TruncatedText>
-        {email ? <TruncatedText className="fa-shell-account-email">{email}</TruncatedText> : null}
+        {email ? (
+          <>
+            {" "}
+            <TruncatedText className="fa-shell-account-email">{email}</TruncatedText>
+          </>
+        ) : null}
       </span>
       <IconChevronDown className="fa-shell-account-chevron" />
     </button>

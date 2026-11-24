@@ -440,6 +440,10 @@ follows a fine pointer and a glint on the rim nearest it.
   carried by colour alone (a ToneDot, a chart series) keeps a shape or a label. Components
   get this from `src/styles/forced-colors.css`; a host's own controls follow the same
   pattern and are checked with forced colours emulated.
+- **R20.11** A control's accessible name holds the text it shows, in the order shown (WCAG 2.5.3,
+  Label in Name), so speech input reaches it by what it says. Name a rich row by its content and
+  put what it does not show (a kind, a full date, a status said only by a dot) in
+  `aria-description`; never name it with an `aria-label` that drops its visible text.
 
 ## R21 · Phones and touch
 

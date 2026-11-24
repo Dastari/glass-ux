@@ -16,7 +16,7 @@ function ReportBar({ size }: { size?: keyof typeof WIDTHS }) {
           <StatusBar.Item>Quarterly report for the Harbour project</StatusBar.Item>
         </StatusBar.Start>
         <StatusBar.End>
-          <StatusBar.Item giveWay={2} onClick={() => undefined} aria-label="Go to page">
+          <StatusBar.Item giveWay={2} onClick={() => undefined} aria-description="Go to page">
             Page 12 of 48
           </StatusBar.Item>
           <StatusBar.Item giveWay={1}>4,210 words</StatusBar.Item>

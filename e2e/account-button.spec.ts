@@ -27,10 +27,14 @@ for (const width of [320, 1440]) {
         name: "AccountButton: Account menu",
         exact: true,
       });
+      // Named by what it shows (WCAG 2.5.3); "Account" and the unread count are its description.
       const account = examples.getByRole("button", {
-        name: "Account: Avery Quinn, 3 unread notifications",
+        name: "Avery Quinn avery.quinn@orbit.example",
         exact: true,
       });
+      await expect(account).toHaveAccessibleDescription(
+        "Account: Avery Quinn, 3 unread notifications",
+      );
       await expect(account).toBeInViewport();
       await expect(account.locator(".fa-shell-account-email")).toHaveText(
         "avery.quinn@orbit.example",
@@ -47,7 +51,7 @@ for (const width of [320, 1440]) {
         )
         .toBe(true);
       const nameOnly = examples.getByRole("button", {
-        name: "Account: Mira Rowan",
+        name: "Mira Rowan",
         exact: true,
       });
       await expect(nameOnly.locator(".fa-shell-account-name")).toHaveText(
@@ -56,14 +60,14 @@ for (const width of [320, 1440]) {
       await expect(nameOnly.locator(".fa-shell-account-email")).toHaveCount(0);
       await expect(
         examples
-          .getByRole("button", { name: "Account: Casey Reed", exact: true })
+          .getByRole("button", { name: "Casey Reed casey.reed@orbit.example", exact: true })
           .locator("img"),
       ).toHaveCount(0);
       await expect(
         examples
-          .getByRole("button", { name: "Account: Casey Reed", exact: true })
+          .getByRole("button", { name: "Casey Reed casey.reed@orbit.example", exact: true })
           .locator(".fa-avatar-initials"),
-      ).toHaveText("CR");
+      ).toHaveAttribute("data-initials", "CR");
       await account.focus();
       const before = await account.boundingBox();
       await account.press("ArrowDown");
@@ -75,9 +79,10 @@ for (const width of [320, 1440]) {
       await expect(read).toBeFocused();
       await page.keyboard.press("Enter");
       const updated = examples.getByRole("button", {
-        name: "Account: Avery Quinn",
+        name: "Avery Quinn avery.quinn@orbit.example",
         exact: true,
       });
+      await expect(updated).toHaveAccessibleDescription("Account: Avery Quinn");
       await expect(updated).toBeFocused();
       await expect(updated.locator(".fa-shell-account-badge")).toHaveCount(0);
       const after = await updated.boundingBox();

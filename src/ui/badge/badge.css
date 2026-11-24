@@ -229,6 +229,9 @@
      entity tile). Always a solid fill with its foreground (R20.7 checks every pair) and the
      shared corner cut-out (below), so it separates from the face it sits on. Never soft: a
      translucent tint over a face reads as part of the face. */
+  .fa-count[data-overlay]::before {
+    content: attr(data-count);
+  }
   .fa-count[data-overlay] {
     --_bg: var(--fg);
     --_fg: var(--fg-inverse);

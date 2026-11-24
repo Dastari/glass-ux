@@ -141,9 +141,13 @@
   .fa-relationship-card[data-selected] {
     outline: var(--focus-ring-width) solid var(--accent-ring);
   }
-  .fa-relationship-card:focus-visible {
+  /* The header is the focusable option; the ring goes round the whole card. */
+  .fa-relationship-card:has(> .fa-relationship-card-header:focus-visible) {
     outline: var(--focus-ring-width) solid var(--accent-ring);
     outline-offset: var(--focus-ring-offset);
+  }
+  .fa-relationship-card-header {
+    outline: none;
   }
   .fa-relationship-card-header {
     display: flex;

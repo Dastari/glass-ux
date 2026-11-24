@@ -349,6 +349,11 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  /* Text that pictures something else, such as a tool's glyph ("1.", "1:1"): drawn from
+     data-text so it is not visible text that its control's name must repeat (WCAG 2.5.3). */
+  .fa-drawn-text::before {
+    content: attr(data-text);
+  }
   .fa-item-trail {
     margin-inline-start: auto;
     padding-inline-start: var(--space-3);

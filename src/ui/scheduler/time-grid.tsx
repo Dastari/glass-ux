@@ -298,12 +298,13 @@ export function TimeGrid({ events, days, scrollToTime }: TimeGridProps) {
           return (
             <Tag
               key={day}
-              {...(opensDay ? { type: "button" as const, onClick: () => (context.setDate(day), context.setView("day")), "aria-label": formatDay(day, locale) } : {})}
+              {...(opensDay ? { type: "button" as const, onClick: () => (context.setDate(day), context.setView("day")), "aria-description": formatDay(day, locale) } : {})}
               className="fa-sch-colhead"
               data-today={day === today ? "" : undefined}
               aria-current={day === today ? "date" : undefined}
             >
-              <span className="fa-sch-colhead-weekday">{weekday.format(fromIsoDate(day))}</span>
+              {/* Named by what it shows ("Mon 23", WCAG 2.5.3); the full date is its description. */}
+              <span className="fa-sch-colhead-weekday">{weekday.format(fromIsoDate(day))}</span>{" "}
               <span className="fa-sch-colhead-day">{dayNumber.format(fromIsoDate(day))}</span>
             </Tag>
           )
@@ -433,12 +434,12 @@ function DayStrip() {
             type="button"
             className="fa-sch-strip-day fa-pressable"
             aria-pressed={day === date}
-            aria-label={formatDay(day, locale)}
+            aria-description={formatDay(day, locale)}
             aria-current={day === today ? "date" : undefined}
             data-today={day === today ? "" : undefined}
             onClick={() => setDate(day)}
           >
-            <span className="fa-sch-strip-weekday">{narrow.format(fromIsoDate(day))}</span>
+            <span className="fa-sch-strip-weekday">{narrow.format(fromIsoDate(day))}</span>{" "}
             <span className="fa-sch-strip-number">{number.format(fromIsoDate(day))}</span>
           </button>
         )

@@ -49,7 +49,14 @@ async function drag(page: Page, from: { x: number; y: number }, to: { x: number;
 }
 
 const status = (page: Page) => page.getByTestId("scheduler-status");
-const event = (scheduler: Locator, title: string) => scheduler.getByRole("button", { name: new RegExp(`^${title},`) });
+/**
+ * An event by its title. Its name is what it shows (title and time, WCAG 2.5.3); the full
+ * what, when and where is its description, held in a hidden span that text filters still read.
+ */
+const event = (scheduler: Locator, title: string, when?: RegExp) => {
+  const named = scheduler.locator("button.fa-sch-ev").filter({ has: scheduler.page().locator(".fa-sch-ev-title", { hasText: new RegExp(`^${title}$`) }) });
+  return when ? named.filter({ hasText: when }) : named;
+};
 
 test("switches between week, month, day and agenda", async ({ page }) => {
   const scheduler = await open(page);
@@ -79,13 +86,13 @@ test("drag over empty time selects a slot, and a click selects one slot", async 
   const end = await timeY(scheduler, 15 * 60 + 20);
   await drag(page, { x, y: start }, { x, y: end });
   await expect(status(page)).toHaveText("Added a work order");
-  await expect(scheduler.getByRole("button", { name: /^New work order, .*2:00\s?pm to 3:30\s?pm$/ })).toBeVisible();
+  await expect(event(scheduler, "New work order", /2:00\s?pm to 3:30\s?pm/)).toBeVisible();
   await expect(scheduler.locator(".fa-sch-ev")).toHaveCount(count + 1);
   // A click selects one 30-minute slot.
   await scrollToTime(scheduler, 18 * 60);
   const y = await timeY(scheduler, 18 * 60 + 10);
   await page.mouse.click(x, y);
-  await expect(scheduler.getByRole("button", { name: /^New work order, .*6:00\s?pm to 6:30\s?pm$/ })).toBeVisible();
+  await expect(event(scheduler, "New work order", /6:00\s?pm to 6:30\s?pm/)).toBeVisible();
 });
 
 test("drags an event to another day and time, and resizes it by its lower edge", async ({ page }) => {
@@ -99,7 +106,7 @@ test("drags an event to another day and time, and resizes it by its lower edge",
   const hour = await scheduler.locator(".fa-sch-cols").evaluate((grid) => grid.offsetHeight / 24);
   await drag(page, grab, { x: await columnX(scheduler, 1), y: grab.y + hour * 1.5 });
   await expect(status(page)).toHaveText("Moved Permit review");
-  await expect(permit).toHaveAccessibleName(/3:30\s?pm to 4:15\s?pm/);
+  await expect(permit).toHaveAccessibleDescription(/3:30\s?pm to 4:15\s?pm/);
   await expect(permit.locator("xpath=ancestor::div[@data-day]")).toHaveAttribute("data-day", tuesday!);
   // The click after the drag did not open it.
   await expect(status(page)).not.toHaveText(/Opened/);
@@ -109,7 +116,7 @@ test("drags an event to another day and time, and resizes it by its lower edge",
   const moved = (await permit.boundingBox())!;
   await drag(page, { x: moved.x + moved.width / 2, y: moved.y + moved.height - 2 }, { x: moved.x + moved.width / 2, y: moved.y + moved.height - 2 + hour });
   await expect(status(page)).toHaveText("Resized Permit review");
-  await expect(permit).toHaveAccessibleName(/3:30\s?pm to 5:15\s?pm/);
+  await expect(permit).toHaveAccessibleDescription(/3:30\s?pm to 5:15\s?pm/);
 });
 
 test("moves and resizes an event with the keyboard and announces it", async ({ page }) => {
@@ -118,14 +125,14 @@ test("moves and resizes an event with the keyboard and announces it", async ({ p
   await lubrication.focus();
   await page.keyboard.press("ArrowDown");
   await page.keyboard.press("ArrowDown");
-  await expect(lubrication).toHaveAccessibleName(/11:30\s?am to 12:30\s?pm/);
+  await expect(lubrication).toHaveAccessibleDescription(/11:30\s?am to 12:30\s?pm/);
   await expect(lubrication).toBeFocused();
   await page.keyboard.press("ArrowRight");
   await expect(lubrication).toBeFocused();
   const tuesday = await scheduler.locator(".fa-sch-col").nth(1).getAttribute("data-day");
   await expect(lubrication.locator("xpath=ancestor::div[@data-day]")).toHaveAttribute("data-day", tuesday!);
   await page.keyboard.press("Shift+ArrowDown");
-  await expect(lubrication).toHaveAccessibleName(/11:30\s?am to 12:45\s?pm/);
+  await expect(lubrication).toHaveAccessibleDescription(/11:30\s?am to 12:45\s?pm/);
   await expect(scheduler.locator(".fa-sch-announcer")).toContainText("Lubrication round now");
   await page.keyboard.press("Enter");
   await expect(status(page)).toHaveText("Opened Lubrication round");
@@ -167,7 +174,7 @@ test("drags a month event to another day", async ({ page }) => {
   await open(page);
   const month = page.getByRole("region", { name: "Maintenance month", exact: true });
   await month.scrollIntoViewIfNeeded();
-  const item = month.getByRole("button", { name: /^Contractor induction,/ });
+  const item = event(month, "Contractor induction");
   const from = await item.locator("xpath=ancestor::div[@role='gridcell']").getAttribute("data-day");
   const box = (await item.boundingBox())!;
   // Sunday of the same week is free.
@@ -175,7 +182,7 @@ test("drags a month event to another day", async ({ page }) => {
   const targetBox = (await target.boundingBox())!;
   await drag(page, { x: box.x + 10, y: box.y + box.height / 2 }, { x: targetBox.x + 10, y: box.y + box.height / 2 });
   await expect(item.locator("xpath=ancestor::div[@role='gridcell']")).not.toHaveAttribute("data-day", from!);
-  await expect(item).toHaveAccessibleName(/1:00\s?pm to 2:00\s?pm/);
+  await expect(item).toHaveAccessibleDescription(/1:00\s?pm to 2:00\s?pm/);
 });
 
 test("a failed save puts the event back and says so", async ({ page }) => {
@@ -187,11 +194,13 @@ test("a failed save puts the event back and says so", async ({ page }) => {
   for (let step = weekday; step < 3; step++) await saving.getByRole("button", { name: "Next day" }).click();
   for (let step = weekday; step > 3; step--) await saving.getByRole("button", { name: "Previous day" }).click();
   const scan = event(saving, "Switchboard thermal scan");
-  const before = await scan.getAttribute("aria-label");
+  // An event's full what and when is its description.
+  const description = () => scan.evaluate((element) => element.getAttribute("aria-describedby")!.split(" ").map((id) => document.getElementById(id)?.textContent).join(" "));
+  const before = await description();
   await scan.focus();
   await page.keyboard.press("ArrowUp");
-  await expect(scan).toHaveAccessibleName(/9:45\s?pm/);
-  await expect(scan).toHaveAttribute("aria-label", before!, { timeout: 5000 });
+  await expect(scan).toHaveAccessibleDescription(/9:45\s?pm/);
+  await expect.poll(description, { timeout: 5000 }).toBe(before);
   await expect(saving.locator(".fa-sch-announcer")).toContainText("could not be changed");
 });
 

@@ -197,6 +197,13 @@ export function Workspace({
   const splits = useWindowState((state) => state.splits);
   const stageRef = useRef<HTMLDivElement>(null);
   const [stage, setStage] = useState<HTMLDivElement | null>(null);
+  // A stable ref: an inline one is a new function each render, so React detaches it (null)
+  // and attaches it again on every commit, and setting state from it re-renders without end
+  // (React #185 on a route change, #35).
+  const attachStage = useCallback((element: HTMLDivElement | null) => {
+    stageRef.current = element;
+    setStage(element);
+  }, []);
   const metrics = useStageMetrics(stage);
   const size = metrics;
   const viewport = useViewportWidth();
@@ -304,10 +311,7 @@ export function Workspace({
           data-sheet={sheet ? "" : undefined}
         >
           <div
-            ref={(element) => {
-              stageRef.current = element;
-              setStage(element);
-            }}
+            ref={attachStage}
             className="fa-wm-workspace-stage"
             data-ready={ready ? "" : undefined}
             data-columns={columns}

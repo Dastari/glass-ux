@@ -455,6 +455,14 @@ function StripBody<T extends TabItem>({ items, value, select, className, content
 
   const activeIndex = items.findIndex((item) => item.value === value)
   const { barRef, measureRef, visible, hidden, solo } = useTabOverflow(items, activeIndex)
+  // Stable: a drop zone's ref sets state, and an inline ref runs again on every commit.
+  const attachBar = useCallback(
+    (element: HTMLDivElement | null) => {
+      barRef.current = element
+      if (typeof zoneRef === "function") zoneRef(element)
+    },
+    [barRef, zoneRef],
+  )
   const pendingFocus = useRef<string | null>(null)
   const hintId = `${useId()}-hint`
   const [announcement, setAnnouncement] = useState(handOver.current.announcement)
@@ -622,10 +630,7 @@ function StripBody<T extends TabItem>({ items, value, select, className, content
 
   return (
     <div
-      ref={(element) => {
-        barRef.current = element
-        if (typeof zoneRef === "function") zoneRef(element)
-      }}
+      ref={attachBar}
       className={cx("fa-tabs-bar", className)}
     >
       <BaseTabs.List className="fa-tabs-list" aria-label={rest["aria-label"]} data-solo={solo ? "" : undefined}>

@@ -580,13 +580,19 @@ function OrderableZone({ listRef, label, hintId, ordered, rowProps, empty, disab
     },
     { trackState: false },
   )
+  // Stable: the zone's ref sets state, and an inline ref runs again on every commit.
+  const zoneRef = zone.ref
+  const attachList = useCallback(
+    (element: HTMLDivElement | null) => {
+      listRef.current = element
+      zoneRef(element)
+    },
+    [listRef, zoneRef],
+  )
   return (
     <div className="fa-transfer-body">
       <div
-        ref={(element) => {
-          listRef.current = element
-          zone.ref(element)
-        }}
+        ref={attachList}
         className="fa-transfer-list"
         role="listbox"
         aria-label={label}

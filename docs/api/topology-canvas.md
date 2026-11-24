@@ -19,7 +19,7 @@ the focused node's menu.
 | className | `string \| undefined` | See type | no | — | Classes applied to the outer element for layout. Use the component props and theme tokens for its appearance. |
 | clusters | `Readonly<Record<string, TopologyClusterSpec>> \| undefined` | See type | no | — | How cluster keys are named and ordered. |
 | defaultSelectedId | `string \| null \| undefined` | See type | no | — | The node selected at first when the selection is uncontrolled. |
-| describeNode | `((node: TopologyNode<T>) => string) \| undefined` | See type | no | — | The node's accessible name: "Switch ORB-SW-CORE, Online, wired 1 Gbps to FA-GW01". Default: its label. |
+| describeNode | `((node: TopologyNode<T>) => string) \| undefined` | See type | no | — | The node's accessible description: what its name, the label and detail line it shows, does not say ("Switch ORB-SW-CORE, Online, wired 1 Gbps to FA-GW01"). The name stays the visible text, so speech input reaches a node by what it says (WCAG 2.5.3). |
 | emptyText | `ReactNode` | See type | no | — | One line for an empty map (R2.5). |
 | frameKey | `unknown` | See type | no | — | Re-fit when this changes (another network). Live changes to the same map keep the camera. |
 | grid | `boolean \| undefined` | false, true | no | true | Draw the dot grid behind the map; it pans and scales with the camera. Default true. |

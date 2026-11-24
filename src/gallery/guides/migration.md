@@ -3,6 +3,12 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.19.12 → 0.19.13
+
+No code edits are needed. A test that finds a TopologyCanvas node by `describeNode`'s sentence
+("Computer 10.13.4.77, Offline") finds it by its label and detail line instead; the sentence is the
+node's description.
+
 ## 0.19.11 → 0.19.12
 
 No code edits are needed in applications. Tests that find these controls by role and name need the

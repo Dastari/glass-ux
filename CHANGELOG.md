@@ -4,6 +4,14 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.19.13
+
+### Changed
+
+- TopologyCanvas nodes are named by the label and detail line they show, through `aria-labelledby` so
+  the name holds where a zoomed-out map hides them; `describeNode`'s sentence is now the node's
+  description, and the tile is left out of the name (Label in Name, WCAG 2.5.3, #34).
+
 ## 0.19.12
 
 ### Changed

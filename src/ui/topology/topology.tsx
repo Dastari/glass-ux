@@ -27,7 +27,7 @@ import { topologyMessages } from "./messages.js"
  *              (src/shell/bleed.tsx), whose reach it takes as `insets` so every frame, the
  *              controls and the minimap stay in the part that shows
  */
-import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent, type PointerEvent, type ReactNode } from "react"
+import { memo, useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent, type PointerEvent, type ReactNode } from "react"
 import { IconFullscreen, IconLayers, IconList, IconNetwork, IconZoomIn, IconZoomOut } from "../../icons/generated/icons.js"
 import { resolveActions, type ActionSet } from "../../lib/actions/actions.js"
 import { cx } from "../../lib/cx.js"
@@ -77,7 +77,11 @@ export interface TopologyCanvasProps<T> {
   clusters?: Readonly<Record<string, TopologyClusterSpec>>
   /** The node's tile (an identity's icon tier). Keep it stable (useCallback). */
   renderNode: (node: TopologyNode<T>) => ReactNode
-  /** The node's accessible name: "Switch ORB-SW-CORE, Online, wired 1 Gbps to FA-GW01". Default: its label. */
+  /**
+   * The node's accessible description: what its name, the label and detail line it shows, does not
+   * say ("Switch ORB-SW-CORE, Online, wired 1 Gbps to FA-GW01"). The name stays the visible text, so
+   * speech input reaches a node by what it says (WCAG 2.5.3).
+   */
   describeNode?: (node: TopologyNode<T>) => string
   /** The selected node's id, or null for none. Controlled while defined; leave it undefined to use `defaultSelectedId`. */
   selectedId?: string | null
@@ -237,20 +241,36 @@ interface NodeViewProps {
 }
 
 const NodeView = /* @__PURE__ */ memo(function NodeView({ node, box, origin, selected, tabbable, name, renderNode }: NodeViewProps) {
+  // Named by its label and detail line (WCAG 2.5.3), through labelledby so the name holds where
+  // a zoomed-out map hides them; the tile is a picture (its own name would repeat the label) and
+  // describeNode's sentence is the description.
+  const id = useId()
   return (
     <div
       role="option"
       className="fa-topology-node"
       data-node-id={node.id}
       aria-selected={selected}
-      aria-label={name}
+      aria-labelledby={node.detail ? `${id}-label ${id}-detail` : `${id}-label`}
+      aria-description={name === node.label ? undefined : name}
       tabIndex={tabbable ? 0 : -1}
       data-selected={selected ? "" : undefined}
       style={{ transform: `translate(${box.x - origin.x}px, ${box.y - origin.y}px)` }}
     >
-      <span className="fa-topology-node-tile">{renderNode(node)}</span>
-      <span className="fa-topology-node-label">{node.label}</span>
-      {node.detail ? <span className="fa-topology-node-detail">{node.detail}</span> : null}
+      <span className="fa-topology-node-tile" aria-hidden>
+        {renderNode(node)}
+      </span>
+      <span id={`${id}-label`} className="fa-topology-node-label">
+        {node.label}
+      </span>
+      {node.detail ? (
+        <>
+          {" "}
+          <span id={`${id}-detail`} className="fa-topology-node-detail">
+            {node.detail}
+          </span>
+        </>
+      ) : null}
     </div>
   )
 })

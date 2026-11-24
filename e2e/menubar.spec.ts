@@ -682,11 +682,19 @@ test("RTL: arrows follow the reading direction and submenus open towards it @res
   await expect(edit).toBeFocused();
   await press(page, "ArrowRight");
   await expect(file).toBeFocused();
-  await press(page, "ArrowDown", "ArrowLeft");
+  // One key at a time, each after the focus it depends on: a menu that is still opening on a
+  // loaded machine takes the next key elsewhere (#33).
+  await press(page, "ArrowDown");
+  await expect(row(page, /^New report/)).toBeFocused();
+  await press(page, "ArrowLeft");
   await expect(row(page, /^Undo/)).toBeFocused();
   await press(page, "ArrowRight");
   await expect(row(page, /^New report/)).toBeFocused();
-  await press(page, "ArrowLeft", "End", "ArrowLeft");
+  await press(page, "ArrowLeft");
+  await expect(row(page, /^Undo/)).toBeFocused();
+  await press(page, "End");
+  await expect(row(page, "Transform")).toBeFocused();
+  await press(page, "ArrowLeft");
   await expect(row(page, /^Upper case/)).toBeFocused();
   const parent = (await row(page, "Transform").boundingBox())!;
   const child = (await page.getByRole("menu").nth(1).boundingBox())!;

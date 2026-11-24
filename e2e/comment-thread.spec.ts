@@ -22,8 +22,18 @@ test("a comment goes pending, then sent, and the composer clears; Ctrl Enter sen
   const box = composer(thread);
   await box.click();
   await page.keyboard.type("Checked on site");
+  // The pending state lasts only as long as the demo's send, which a loaded machine can miss
+  // between polls (#33): record it as it happens instead.
+  await thread.evaluate((root) => {
+    (window as unknown as { pendingSeen?: boolean }).pendingSeen = false;
+    const check = () => {
+      for (const article of root.querySelectorAll("article.fa-comment"))
+        if (article.textContent?.includes("Sending…") && article.textContent.includes("Checked on site")) (window as unknown as { pendingSeen?: boolean }).pendingSeen = true;
+    };
+    new MutationObserver(check).observe(root, { subtree: true, childList: true, characterData: true });
+  });
   await thread.getByRole("button", { name: "Send", exact: true }).click();
-  await expect(comment(thread, "Sending…")).toContainText("Checked on site");
+  await expect.poll(() => page.evaluate(() => (window as unknown as { pendingSeen?: boolean }).pendingSeen)).toBe(true);
   await expect(thread.getByText("Sending…")).toBeHidden();
   await expect(comment(thread, "Checked on site")).toBeVisible();
   await expect(box).toHaveText("");

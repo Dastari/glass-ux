@@ -12,7 +12,29 @@ const row = (page: Page, id: string) => project(page).locator(`[data-row-id="${i
 const log = (page: Page) => page.getByTestId("tree-project-log");
 const selected = (page: Page) => page.getByTestId("tree-project-selected");
 
+/**
+ * The project demo sits below the fold. Scrolling to it lets the blocks above it render and change
+ * height, so a click whose own scroll moves the page lands on a neighbouring row (#33): bring the
+ * tree into view and start once its rows hold still.
+ */
+async function settle(page: Page) {
+  await project(page).scrollIntoViewIfNeeded();
+  const first = project(page).getByRole("treeitem").first();
+  await expect
+    .poll(() =>
+      first.evaluate(
+        (element) =>
+          new Promise<boolean>((resolve) => {
+            const before = element.getBoundingClientRect().top;
+            setTimeout(() => requestAnimationFrame(() => resolve(Math.abs(element.getBoundingClientRect().top - before) < 0.5)), 150);
+          }),
+      ),
+    )
+    .toBe(true);
+}
+
 test("multi-select: clicks, modifiers, ranges and keys, with aria-selected on each row", async ({ page }) => {
+  await settle(page);
   await expect(project(page).getByRole("tree")).toHaveAttribute("aria-multiselectable", "true");
   await row(page, "brief/scope").click();
   await expect(selected(page)).toHaveText("brief/scope");
@@ -84,6 +106,7 @@ test("a Move menu is the single-pointer route", async ({ page }) => {
 });
 
 test("drag moves into a branch and between rows, with the selection", async ({ page }) => {
+  await settle(page);
   await project(page).scrollIntoViewIfNeeded();
   await row(page, "brief/scope").click();
   await row(page, "brief/budget").click({ modifiers: ["ControlOrMeta"] });

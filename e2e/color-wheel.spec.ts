@@ -107,7 +107,26 @@ test("right to left: the wheel does not mirror, and Left raises the hue", async 
  * outward is the panel).
  */
 async function beadContrast(page: Page, wheel: Locator) {
-  const bead = (await wheel.locator(".fa-color-wheel-bead").boundingBox())!;
+  // The bead follows the last key a frame or more later on a loaded machine (#33): sample it
+  // once it holds still, or the shot is taken beside it.
+  const beadEl = wheel.locator(".fa-color-wheel-bead");
+  await expect
+    .poll(() =>
+      beadEl.evaluate(
+        (el) =>
+          new Promise<boolean>((resolve) => {
+            const before = el.getBoundingClientRect();
+            requestAnimationFrame(() =>
+              requestAnimationFrame(() => {
+                const after = el.getBoundingClientRect();
+                resolve(Math.abs(after.x - before.x) < 0.01 && Math.abs(after.y - before.y) < 0.01);
+              }),
+            );
+          }),
+      ),
+    )
+    .toBe(true);
+  const bead = (await beadEl.boundingBox())!;
   const centre = await field(wheel);
   const pad = 14;
   const clip = { x: bead.x - pad, y: bead.y - pad, width: bead.width + pad * 2, height: bead.height + pad * 2 };

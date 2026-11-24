@@ -353,6 +353,9 @@ test("keyboard shortcuts are scoped to the focused player and respect configureS
 
   await seekInput.focus();
   await page.keyboard.press("k");
+  // Playback starts when the media element says so, which under load can take a while: wait
+  // for the element, then for the announcement it causes (#33).
+  await expect(video).toHaveJSProperty("paused", false, { timeout: 15_000 });
   await expect(root.locator("[aria-live='polite']")).toHaveText("Playing");
   await page.keyboard.press("Space");
   await expect(video).toHaveJSProperty("paused", true);

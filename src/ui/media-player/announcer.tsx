@@ -40,15 +40,27 @@ export function MediaAnnouncer({ player, t, locale, mode, message }: { player: M
   useEffect(() => {
     let previous = player.getState()
     let timer: ReturnType<typeof setTimeout> | undefined
+    // The volume last said, in whole percent: the element reports volume again when playback
+    // starts, and saying the same level then would replace "Playing" half a second later.
+    let saidVolume = Math.round(previous.volume * 100)
     const stop = player.subscribe(() => {
       const next = player.getState()
       const { t: words, locale: language } = latest.current
       const said = describe(previous, next, words, language)
-      if (said) setText(said)
+      if (said) {
+        // A later change is what the person did last: it replaces a volume not yet said.
+        clearTimeout(timer)
+        setText(said)
+      }
       // A receiver reporting its own volume is not a change anyone made.
       if (previous.volume !== next.volume && !next.muted && previous.cast.status === next.cast.status) {
         clearTimeout(timer)
-        timer = setTimeout(() => setText(words.announceVolume(formatPercent(language, Math.round(next.volume * 100)))), SETTLE_MS)
+        const percent = Math.round(next.volume * 100)
+        if (percent !== saidVolume)
+          timer = setTimeout(() => {
+            saidVolume = percent
+            setText(words.announceVolume(formatPercent(language, percent)))
+          }, SETTLE_MS)
       }
       previous = next
     })

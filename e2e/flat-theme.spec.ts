@@ -78,7 +78,7 @@ for (const mode of ["light", "dark"] as const) {
   });
 }
 
-test("Flat canvas uses the darker colour across every palette and mode island @responsive", async ({ page }) => {
+test("Flat canvas is white in light and the darker colour in dark, across every palette and mode island @responsive", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByTestId("studio-workspace")).toBeVisible();
   const colours = await page.evaluate((palettes) => {
@@ -110,8 +110,10 @@ test("Flat canvas uses the darker colour across every palette and mode island @r
   }, ["ocean", "aurora", "emerald", "sunset", "graphite", "ruby", "lagoon", "indigo", "rose", "moss", "sand", "slate"]);
   for (const { palette, mode, style, colour, hue, island } of colours) {
     const expected = (dark: boolean) => {
-      const lightness = dark ? { flat: 0.18, glass: 0.17 } : { flat: 0.985, glass: 0.94 };
-      const chroma = dark ? 0.022 : style === "flat" ? 0.005 : 0.016;
+      // Light Flat is plain white; the others keep the palette's neutral hue.
+      if (!dark && style === "flat") return "oklch(1 0 0)";
+      const lightness = dark ? { flat: 0.18, glass: 0.17 } : { glass: 0.94 };
+      const chroma = dark ? 0.022 : 0.016;
       return `oklch(${lightness[style as "flat" | "glass"]} ${chroma} ${hue})`;
     };
     expect(colour, `${palette} ${mode} ${style}`).toBe(expected(mode === "dark"));

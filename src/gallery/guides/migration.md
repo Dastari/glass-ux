@@ -3,6 +3,12 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.19.13 → 0.19.14
+
+No code edits are needed. In light mode with the Flat style the canvas is white rather than the
+palette's near-white neutral; check screenshots or colour assertions taken against it, and content
+drawn straight on the canvas that relied on the faint tint to stand apart.
+
 ## 0.19.12 → 0.19.13
 
 No code edits are needed. A test that finds a TopologyCanvas node by `describeNode`'s sentence

@@ -4,6 +4,13 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
+## 0.19.14
+
+### Changed
+
+- Light Flat canvases are white (`oklch(1 0 0)`) in every palette, instead of the palette's
+  near-white neutral. Dark Flat and both Glass canvases are unchanged.
+
 ## 0.19.13
 
 ### Changed

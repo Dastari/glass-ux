@@ -78,7 +78,7 @@ for (const mode of ["light", "dark"] as const) {
   });
 }
 
-test("Flat canvas is white in light and the darker colour in dark, across every palette and mode island @responsive", async ({ page }) => {
+test("Flat canvas is a neutral off-white in light and the darker colour in dark, across every palette and mode island @responsive", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByTestId("studio-workspace")).toBeVisible();
   const colours = await page.evaluate((palettes) => {
@@ -110,8 +110,8 @@ test("Flat canvas is white in light and the darker colour in dark, across every 
   }, ["ocean", "aurora", "emerald", "sunset", "graphite", "ruby", "lagoon", "indigo", "rose", "moss", "sand", "slate"]);
   for (const { palette, mode, style, colour, hue, island } of colours) {
     const expected = (dark: boolean) => {
-      // Light Flat is plain white; the others keep the palette's neutral hue.
-      if (!dark && style === "flat") return "oklch(1 0 0)";
+      // Light Flat is a neutral off-white; the others keep the palette's neutral hue.
+      if (!dark && style === "flat") return "oklch(0.98 0 0)";
       const lightness = dark ? { flat: 0.18, glass: 0.17 } : { glass: 0.94 };
       const chroma = dark ? 0.022 : 0.016;
       return `oklch(${lightness[style as "flat" | "glass"]} ${chroma} ${hue})`;
@@ -119,4 +119,38 @@ test("Flat canvas is white in light and the darker colour in dark, across every 
     expect(colour, `${palette} ${mode} ${style}`).toBe(expected(mode === "dark"));
     expect(island, `${palette} ${mode} ${style} inverted island`).toBe(expected(mode !== "dark"));
   }
+});
+
+test("An application sets its own Flat canvas for each mode, which mode islands follow", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByTestId("studio-workspace")).toBeVisible();
+  const colours = await page.evaluate(() => {
+    const root = document.documentElement;
+    const host = document.createElement("style");
+    host.textContent = ":root { --canvas-flat-light: rgb(250, 248, 240); --canvas-flat-dark: rgb(20, 24, 32); }";
+    document.head.append(host);
+    root.dataset.style = "flat";
+    root.dataset.palette = "ocean";
+    const probe = document.createElement("div");
+    probe.style.backgroundColor = "var(--canvas)";
+    document.body.append(probe);
+    const island = document.createElement("div");
+    island.style.backgroundColor = "var(--canvas)";
+    probe.append(island);
+    const read = (mode: string) => {
+      root.dataset.mode = mode;
+      island.dataset.mode = mode === "dark" ? "light" : "dark";
+      return { page: getComputedStyle(probe).backgroundColor, island: getComputedStyle(island).backgroundColor };
+    };
+    const result = { light: read("light"), dark: read("dark") };
+    root.dataset.style = "glass";
+    const glass = getComputedStyle(probe).backgroundColor;
+    probe.remove();
+    host.remove();
+    return { ...result, glass };
+  });
+  expect(colours.light).toEqual({ page: "rgb(250, 248, 240)", island: "rgb(20, 24, 32)" });
+  expect(colours.dark).toEqual({ page: "rgb(20, 24, 32)", island: "rgb(250, 248, 240)" });
+  // Glass keeps its own canvas.
+  expect(colours.glass).not.toBe("rgb(20, 24, 32)");
 });

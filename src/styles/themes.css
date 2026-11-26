@@ -214,6 +214,9 @@
    * The light scope includes :root so a page without data-mode is light; the dark blocks come
    * later so a dark <html> wins that tie. Browsers without @scope (Firefox ESR 140) read
    * scope-fallback.css, which `pnpm styles` regenerates from these blocks and brand.css.
+   *
+   * Flat's canvas reads --canvas-flat-light and --canvas-flat-dark when they are set: an
+   * application sets them on :root, or on its own [data-palette], to choose its Flat canvas.
    */
   @scope (:root, [data-mode="light"]) {
     :scope,
@@ -222,7 +225,7 @@
 
       --canvas: oklch(0.94 0.016 var(--neutral-h));
       --canvas-solid: oklch(0.985 0.005 var(--neutral-h));
-      --canvas-flat: oklch(1 0 0);
+      --canvas-flat: var(--canvas-flat-light, oklch(0.98 0 0));
       --fg: oklch(0.235 0.03 var(--neutral-h));
       --fg-muted: oklch(0.42 0.026 var(--neutral-h));
       --fg-subtle: oklch(0.49 0.022 var(--neutral-h));
@@ -301,7 +304,7 @@
 
       --canvas: oklch(0.17 0.022 var(--neutral-h));
       --canvas-solid: oklch(0.215 0.022 var(--neutral-h));
-      --canvas-flat: oklch(0.18 0.022 var(--neutral-h));
+      --canvas-flat: var(--canvas-flat-dark, oklch(0.18 0.022 var(--neutral-h)));
       --fg: oklch(0.965 0.006 var(--neutral-h));
       --fg-muted: oklch(0.77 0.016 var(--neutral-h));
       --fg-subtle: oklch(0.66 0.016 var(--neutral-h));

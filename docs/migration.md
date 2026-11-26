@@ -5,9 +5,10 @@ then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everyth
 
 ## 0.19.13 → 0.19.14
 
-No code edits are needed. In light mode with the Flat style the canvas is white rather than the
-palette's near-white neutral; check screenshots or colour assertions taken against it, and content
-drawn straight on the canvas that relied on the faint tint to stand apart.
+No code edits are needed. In light mode with the Flat style the canvas is a neutral off-white
+(`oklch(0.98 0 0)`) rather than the palette's tinted near-white, so `canvasTint` no longer tints it;
+check screenshots or colour assertions taken against it. To keep another colour, set
+`--canvas-flat-light` (and `--canvas-flat-dark` for dark mode) on `:root` or on your palette.
 
 ## 0.19.12 → 0.19.13
 

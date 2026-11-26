@@ -19,7 +19,8 @@ Read [the theme and layout contract](layout-contract.md) before composing the fi
 
 An application-owned palette is CSS containing the named `data-palette` selector and the
 palette parameters. Register its identifier and label with `definePalette(id, label)`, then
-use it in `configureAppearance`. A brand colour without a full palette can be a default
+use it in `configureAppearance`. The Flat style's canvas is `--canvas-flat-light` and
+`--canvas-flat-dark`, set on `:root` for every palette or on the palette's selector for one. A brand colour without a full palette can be a default
 instead: `configureAppearance({ defaults: { accentColor: "#0b6e4f" } })`, adjusted for
 contrast like any custom colour. `defineBackground(id, label)` registers an
 application-owned canvas, and `backgroundImage` with `background: "image"` shows a

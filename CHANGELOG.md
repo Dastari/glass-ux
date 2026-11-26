@@ -8,8 +8,13 @@ has upgrade steps in the [migration guide](docs/migration.md).
 
 ### Changed
 
-- Light Flat canvases are white (`oklch(1 0 0)`) in every palette, instead of the palette's
-  near-white neutral. Dark Flat and both Glass canvases are unchanged.
+- Light Flat canvases are a neutral off-white (`oklch(0.98 0 0)`) in every palette, instead of the
+  palette's tinted near-white. Dark Flat and both Glass canvases are unchanged.
+
+### Added
+
+- `--canvas-flat-light` and `--canvas-flat-dark` set an application's own Flat canvas for each mode.
+  Set them on `:root`, or on an application palette's `[data-palette]`; mode islands follow them.
 
 ## 0.19.13
 

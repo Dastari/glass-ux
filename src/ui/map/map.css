@@ -11,6 +11,7 @@
  *   --fa-map-glow-core     the glow's crisp core, pulled toward the ink
  *   --fa-map-land / -water / -road / -road-major / -boundary / -building   basemap inks
  *   --fa-map-label / -label-strong / -label-halo                             label text
+ *   --fa-map-area          a circle around a point (a geofence): its line, and its fill faintly
  *   --fa-map-fit-padding   room around a framed region or set of points (on the stage)
  *   --fa-map-fade          the soft edge where the canvas meets the Glass UX canvas
  *
@@ -32,6 +33,7 @@
     --fa-map-label: var(--fg-muted);
     --fa-map-label-strong: var(--fg);
     --fa-map-label-halo: var(--canvas);
+    --fa-map-area: var(--accent);
     --fa-map-fade: var(--space-8);
     /* Insets: page chrome floating over a full-bleed map (a header, a status strip), set by the
        caller (GeoMap's `insets`). Controls, the credits, the list and every frame clear them. */

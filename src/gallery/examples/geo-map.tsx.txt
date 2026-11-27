@@ -38,6 +38,58 @@ const POINTS: MapPoint<{
   description: site.address.split(", ").at(-1),
   data: { address: site.address },
 }));
+/** Three fictional work sites around a city, each with its geofence (`radius`, metres). */
+const FENCED: MapPoint<{
+  address: string;
+}>[] = [
+  {
+    id: "fence-yard",
+    lng: 147.272,
+    lat: -42.81,
+    status: "healthy",
+    label: "North yard",
+    radius: 800,
+    data: { address: "Sample Road, Glenorchy" },
+  },
+  {
+    id: "fence-depot",
+    lng: 147.398,
+    lat: -42.873,
+    status: "warning",
+    label: "Harbour depot",
+    radius: 1200,
+    data: { address: "Sample Wharf, Bellerive" },
+  },
+  {
+    id: "fence-quarry",
+    lng: 147.297,
+    lat: -42.968,
+    status: "healthy",
+    label: "Ridge quarry",
+    radius: 2500,
+    data: { address: "Sample Track, Kingston" },
+  },
+];
+
+/** GeoMap framed on its points, each drawn with its area. */
+function FencedMap() {
+  const [selected, setSelected] = useState<string | null>(null);
+  return (
+    <div className="gallery-map-frame" data-testid="map-areas">
+      <GeoMap
+        label="Sites with geofences"
+        config={DEMO_MAP_CONFIG}
+        home={null}
+        frame="points"
+        points={FENCED}
+        selectedId={selected}
+        onSelectedIdChange={setSelected}
+        renderPopup={(point) => <PointPopup point={point} />}
+      />
+    </div>
+  );
+}
+
 const OUTLINE_ONLY: MapConfig = { ...DEMO_MAP_CONFIG, basemap: null };
 const ATTRIBUTION_CONFIG: MapConfig = {
   ...OUTLINE_ONLY,
@@ -204,6 +256,15 @@ export default function MapSection() {
             </div>
           </Example>
         </div>
+      </Specimen>
+
+      <Specimen
+        title="Areas around points"
+        description="A point's radius, in metres, draws a circle of its true size: a site's geofence. It is a faint fill under an accent line at every zoom, so the circles read at street zoom on an overview map."
+        layout="bare"
+        wide
+      >
+        <FencedMap />
       </Specimen>
 
       <Specimen

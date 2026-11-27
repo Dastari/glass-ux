@@ -13,6 +13,11 @@ import { mapMessages } from "./messages.js"
  *   camera    moved only by a value from outside (a lookup, typed coordinates) or goTo. A drag,
  *             click or nudge inside the map moves the pin and leaves the view alone.
  *   credit    the data licence's short form ("© OpenStreetMap"), always visible
+ *   radius    with `radius`, a circle of that many metres around the pin (a geofence), drawn at
+ *             its true size at every zoom and following the pin as it moves. With
+ *             `onRadiusChange`, a handle on its east edge resizes it: drag it, or focus it and
+ *             use the arrow keys (a slider; Page Up and Down step ten times, Home and End go to
+ *             the limits). A circle too small to hold its handle shows it only while focused.
  *
  * Until MapLibre arrives the well shows its loading tile; when it cannot load (no WebGL, tiles
  * blocked) it says so in the same box. Nothing moves either way (R9).
@@ -23,6 +28,9 @@ import { IconMapPin, IconZoomIn, IconZoomOut } from "../../icons/generated/icons
 import { cx } from "../../lib/cx.js"
 import { observeElementSize } from "../../lib/resize-observer.js"
 import { Button } from "../button/index.js"
+import { numberFormat } from "../../lib/locale/intl.js"
+import { useLocale } from "../../lib/locale/use-locale.js"
+import { clampRadius } from "./area.js"
 import type { PinEngine } from "./pin-engine.js"
 import { tokenDuration } from "../../lib/motion.js"
 import { observeAppearance, readMapTheme } from "./theme.js"
@@ -56,6 +64,24 @@ export interface PinMapProps {
   zoom?: number
   /** The area shown when there is no pin: [west, south, east, north]. Default: the world. */
   fallback?: LngLatBox
+  /**
+   * A circle of this many metres around the pin, such as a geofence, drawn at its true size at
+   * every zoom and moving with the pin. Omit for none.
+   */
+  radius?: number
+  /**
+   * Called with the new radius as its handle is dragged or stepped with the keyboard. Adds the
+   * handle; without it the circle is fixed. Keep `radius` controlled, in sync with a field.
+   */
+  onRadiusChange?: (metres: number) => void
+  /** The smallest radius the handle allows. Default 10 m. */
+  minRadius?: number
+  /** The largest radius the handle allows. Default 10,000 m. */
+  maxRadius?: number
+  /** The handle's step in metres; Page Up and Down move ten. Default 5 m. */
+  radiusStep?: number
+  /** Names the handle: "Geofence radius". Default "Radius". Its value is read as a distance. */
+  radiusLabel?: string
   className?: string
   /** The handle for moving the view from outside the map. */
   ref?: Ref<PinMapHandle>
@@ -81,16 +107,40 @@ const SAME_POINT_DEGREES = 1e-4
 const samePoint = (a: PinPoint, b: PinPoint) => Math.abs(a.lat - b.lat) < SAME_POINT_DEGREES && Math.abs(a.lng - b.lng) < SAME_POINT_DEGREES
 
 /** A map with one draggable pin for choosing a location: drag, click or nudge it with the arrow keys (Shift moves further). Controlled through `value`; without `onValueChange` it is a read-only preview. */
-export function PinMap({ config, value, onValueChange, label, zoom = 16, fallback = WORLD, className, ref }: PinMapProps) {
+export function PinMap({
+  config,
+  value,
+  onValueChange,
+  label,
+  zoom = 16,
+  fallback = WORLD,
+  radius,
+  onRadiusChange,
+  minRadius = 10,
+  maxRadius = 10_000,
+  radiusStep = 5,
+  radiusLabel,
+  className,
+  ref,
+}: PinMapProps) {
   const messages = useMessages(mapMessages)
+  const locale = useLocale()
 
   const rootRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLDivElement>(null)
   const engineRef = useRef<PinEngine | null>(null)
   const [engine, setEngine] = useState<PinEngine | null>(null)
   const [phase, setPhase] = useState<Phase>("loading")
-  const latest = useRef({ value, onValueChange })
-  latest.current = { value, onValueChange }
+  const latest = useRef({ value, onValueChange, radius, onRadiusChange, minRadius, maxRadius, radiusStep })
+  latest.current = { value, onValueChange, radius, onRadiusChange, minRadius, maxRadius, radiusStep }
+  // A radius from a drag or a key, held to the limits and the step; reported only when it changes.
+  const resize = (metres: number) => {
+    const { radius: current, onRadiusChange: report, minRadius: min, maxRadius: max, radiusStep: step } = latest.current
+    const next = clampRadius(metres, min, max, step)
+    if (next !== current) report?.(next)
+  }
+  const resizeRef = useRef(resize)
+  resizeRef.current = resize
   const editable = Boolean(onValueChange)
   // The last point placed inside the map, so its return as `value` does not move the view.
   const placed = useRef<PinPoint | null>(null)
@@ -120,6 +170,8 @@ export function PinMap({ config, value, onValueChange, label, zoom = 16, fallbac
           zoom,
           fadeDuration: cameraMove(root).animate ? 150 : 0,
           draggable: editable,
+          radiusEditable: Boolean(onRadiusChange),
+          onRadiusDrag: (metres) => resizeRef.current(metres),
           onLoad: () => {
             if (!cancelled) setPhase("ready")
           },
@@ -184,6 +236,31 @@ export function PinMap({ config, value, onValueChange, label, zoom = 16, fallbac
     placed.current = null
     if (!own) engine.show(value, zoom, cameraMove(rootRef.current))
   }, [engine, value, zoom])
+
+  // The circle follows the radius; the engine keeps it on the pin.
+  useEffect(() => {
+    engine?.setRadius(radius ?? null)
+  }, [engine, radius])
+
+  const onRadiusKey = (event: KeyboardEvent<HTMLElement>) => {
+    if (radius === undefined) return
+    const many = radiusStep * 10
+    const next =
+      {
+        ArrowRight: radius + (event.shiftKey ? many : radiusStep),
+        ArrowUp: radius + (event.shiftKey ? many : radiusStep),
+        ArrowLeft: radius - (event.shiftKey ? many : radiusStep),
+        ArrowDown: radius - (event.shiftKey ? many : radiusStep),
+        PageUp: radius + many,
+        PageDown: radius - many,
+        Home: minRadius,
+        End: maxRadius,
+      }[event.key]
+    if (next === undefined) return
+    event.preventDefault()
+    resize(next)
+  }
+  const distance = (metres: number) => numberFormat(locale, { style: "unit", unit: "meter", unitDisplay: "long", maximumFractionDigits: 0 }).format(metres)
 
   // The wheel zooms at the cursor, unless it is a scroll that began elsewhere still going.
   useEffect(() => {
@@ -260,6 +337,23 @@ export function PinMap({ config, value, onValueChange, label, zoom = 16, fallbac
               <IconMapPin />
             </button>,
             engine.host
+          )
+        : null}
+      {engine && value && radius !== undefined && onRadiusChange
+        ? createPortal(
+            <span
+              role="slider"
+              tabIndex={0}
+              className="fa-pin-map-radius"
+              aria-label={radiusLabel ?? messages.radius}
+              aria-orientation="horizontal"
+              aria-valuemin={minRadius}
+              aria-valuemax={maxRadius}
+              aria-valuenow={radius}
+              aria-valuetext={distance(radius)}
+              onKeyDown={onRadiusKey}
+            />,
+            engine.radiusHost
           )
         : null}
       {phase === "ready" ? (

@@ -1157,6 +1157,7 @@ export default defineMessagePack("zh-Hans", {
     mapLoadFailedAt: (coordinates) => `地图无法加载。${coordinates}`,
     pinAtDragItOrUseThe: (coordinates) => `固定在 ${coordinates}。拖动它或使用箭头键移动它。`,
     pinAt: (coordinates) => `固定在 ${coordinates}`,
+    radius: "半径",
     site: "站点",
     sites: "站点",
       webglError: "无法启动地图：此浏览器已关闭 WebGL。",

@@ -1157,6 +1157,7 @@ export default defineMessagePack("ja", {
     mapLoadFailedAt: (coordinates) => `マップをロードできませんでした。${coordinates}`,
     pinAtDragItOrUseThe: (coordinates) => `${coordinates}にピンを留めます。ドラッグするか、矢印キーを使用して移動します。`,
     pinAt: (coordinates) => `${coordinates}にピンを留めます`,
+    radius: "半径",
     site: "サイト",
     sites: "サイト",
       webglError: "地図を起動できませんでした。このブラウザーではWebGLが無効になっています。",

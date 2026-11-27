@@ -21,6 +21,11 @@ export interface MapPoint<T = unknown> {
   label: string
   /** Read after the label by assistive tech and in the outside-view list: "Northstar Studio". */
   description?: string
+  /**
+   * An area around the point, in metres (a site's geofence): drawn as a circle of its true size,
+   * a faint fill under an accent line, at every zoom. Omit for none.
+   */
+  radius?: number
   /** Typed records rendered by the component. */
   data: T
 }

@@ -184,6 +184,7 @@ export class MapEngine {
     // Data goes through setData (cheap, keeps clusters warm); the theme through a diffed style.
     const source = <T extends GeoJSONSource>(id: string) => this.map.getSource<T>(id)
     if (next.points !== previous.points) source(SOURCE.points)?.setData(next.points)
+    if (next.areas !== previous.areas) source(SOURCE.areas)?.setData(next.areas ?? { type: "FeatureCollection", features: [] })
     if (next.home !== previous.home) source(SOURCE.home)?.setData((next.home ?? { type: "FeatureCollection", features: [] }) as GeoJSON.GeoJSON)
     if (next.regions !== previous.regions) source(SOURCE.regions)?.setData({ type: "FeatureCollection", features: next.regions as unknown as GeoJSON.Feature[] })
     if (next.theme !== previous.theme || next.basemap !== previous.basemap) this.map.setStyle(createMapStyle(next), { diff: true })

@@ -3,7 +3,50 @@
 import { useState } from "react";
 import { SectionPage, Specimen } from "../kit.js";
 import { DEMO_MAP_CONFIG } from "../fixtures/map.js";
+import { Field } from "../../ui/field/index.js";
 import { PinMap } from "../../ui/map/index.js";
+import { NumberField } from "../../ui/number-field/index.js";
+
+function GeofenceExample() {
+  const [value, setValue] = useState<{
+    lng: number;
+    lat: number;
+  } | null>({
+    lng: 147.3257,
+    lat: -42.8826,
+  });
+  const [radius, setRadius] = useState(200);
+  return (
+    <div className="flex w-full flex-col gap-3" data-testid="pin-map-radius">
+      <div className="w-full [--fa-pin-map-h:20rem]">
+        <PinMap
+          config={DEMO_MAP_CONFIG}
+          value={value}
+          onValueChange={setValue}
+          label="Sample site geofence"
+          zoom={15}
+          radius={radius}
+          onRadiusChange={setRadius}
+          minRadius={25}
+          maxRadius={5000}
+          radiusStep={25}
+          radiusLabel="Geofence radius"
+        />
+      </div>
+      <Field label="Geofence radius">
+        <NumberField
+          value={radius}
+          onValueChange={(next) => setRadius(next ?? 25)}
+          min={25}
+          max={5000}
+          step={25}
+          unit="m"
+          className="w-48"
+        />
+      </Field>
+    </div>
+  );
+}
 
 export default function PinMapExample() {
   const [value, setValue] = useState<{
@@ -28,6 +71,14 @@ export default function PinMapExample() {
             label="Sample studio location"
           />
         </div>
+      </Specimen>
+      <Specimen
+        title="Radius"
+        description="A circle of `radius` metres follows the pin, at its true size at every zoom. With onRadiusChange its edge has a handle: drag it, or focus it and use the arrow keys. The field and the handle share one value."
+        layout="stack"
+        specimenKey="component-examples:PinMapExample:1"
+      >
+        <GeofenceExample />
       </Specimen>
     </SectionPage>
   );

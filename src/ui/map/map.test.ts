@@ -173,6 +173,7 @@ const THEME: MapTheme = {
   label: "rgba(190, 195, 205, 1)",
   labelStrong: "rgba(245, 246, 250, 1)",
   labelHalo: "rgba(20, 22, 30, 1)",
+  area: "rgba(90, 150, 250, 1)",
 }
 
 const BASEMAP: MapBasemap = {

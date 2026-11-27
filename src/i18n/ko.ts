@@ -1157,6 +1157,7 @@ export default defineMessagePack("ko", {
     mapLoadFailedAt: (coordinates) => `지도를 불러올 수 없습니다. ${coordinates}`,
     pinAtDragItOrUseThe: (coordinates) => `${coordinates}의 핀. 드래그하거나 화살표 키로 이동하세요.`,
     pinAt: (coordinates) => `${coordinates}의 핀`,
+    radius: "반경",
     site: "사이트",
     sites: "사이트",
       webglError: "지도를 시작하지 못했습니다. 이 브라우저에서 WebGL이 꺼져 있습니다.",

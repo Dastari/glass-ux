@@ -18,6 +18,8 @@
  *   regions          other regions that hold points: a faint line in the glow colour
  *   home             the home region: a near-transparent fill under three stacked lines (a wide
  *                    blurred halo, a medium glow, a crisp core) that ease off past zoom 9
+ *   areas            circles of N metres around points (a geofence): a translucent fill under an
+ *                    accent line, at every zoom, so their true size shows at street zoom
  *   labels           few and muted at state zoom (cities), more as you zoom: towns from 7.5,
  *                    villages from 10, suburbs and localities from 12, roads from 13, water
  *                    names in italic from 8; every label on a canvas-coloured halo
@@ -46,6 +48,8 @@ export interface MapTheme {
   label: string
   labelStrong: string
   labelHalo: string
+  /** Areas around points (a geofence's circle): the accent. Defaults to `glow`. */
+  area?: string
 }
 
 export interface MapStyleInput {
@@ -57,13 +61,15 @@ export interface MapStyleInput {
   regions: readonly MapRegion[]
   /** Geographical or chart points. */
   points: GeoJSON.FeatureCollection<GeoJSON.Point>
+  /** Circles around points (area.ts). */
+  areas?: GeoJSON.FeatureCollection<GeoJSON.Polygon>
   /** Clusters break apart above this zoom. */
   clusterMaxZoom?: number
   /** Cluster radius in screen pixels. */
   clusterRadius?: number
 }
 
-export const SOURCE = { basemap: "basemap", home: "home", regions: "regions", points: "points" } as const
+export const SOURCE = { basemap: "basemap", home: "home", regions: "regions", points: "points", areas: "areas" } as const
 export const POINTS_LAYER = "points-anchor"
 
 /**
@@ -337,6 +343,22 @@ function regionLayers(theme: MapTheme): LayerSpecification[] {
   ]
 }
 
+/** Areas around points: a faint fill, and a line that stays crisp at every zoom. */
+function areaLayers(theme: MapTheme): LayerSpecification[] {
+  const light = theme.mode === "light"
+  const colour = theme.area ?? theme.glow
+  return [
+    { id: "areas-fill", type: "fill", source: SOURCE.areas, paint: { "fill-color": colour, "fill-opacity": light ? 0.1 : 0.14 } },
+    {
+      id: "areas-line",
+      type: "line",
+      source: SOURCE.areas,
+      layout: { "line-join": "round" },
+      paint: { "line-color": colour, "line-opacity": light ? 0.85 : 0.9, "line-width": byZoom([[8, 1.25], [16, 2]]) },
+    },
+  ]
+}
+
 /**
  * The markers' footprint for label placement (see MARKER_ANCHOR_IMAGE): an invisible icon the
  * size of each marker and, where the map has glyphs, the site's name to its right from the
@@ -390,6 +412,7 @@ export function createMapStyle(input: MapStyleInput): StyleSpecification {
       clusterMaxZoom: input.clusterMaxZoom ?? 12,
       clusterProperties: statusClusterProperties(),
     },
+    [SOURCE.areas]: { type: "geojson", data: input.areas ?? EMPTY },
   }
   if (basemap) sources[SOURCE.basemap] = tileSource(basemap, input.origin)
   const base = basemap ? basemapLayers(theme, basemap.fonts) : { ground: [], labels: [] }
@@ -402,6 +425,7 @@ export function createMapStyle(input: MapStyleInput): StyleSpecification {
       ...base.ground,
       ...regionLayers(theme),
       ...homeLayers(theme),
+      ...areaLayers(theme),
       ...base.labels,
       markerAnchorLayer(basemap?.fonts.bold ?? null),
     ],

@@ -1157,6 +1157,7 @@ export default defineMessagePack("es", {
     mapLoadFailedAt: (coordinates) => `El mapa no se pudo cargar. ${coordinates}`,
     pinAtDragItOrUseThe: (coordinates) => `Fijar en ${coordinates}. Arrástrelo o use las teclas de flecha para moverlo.`,
     pinAt: (coordinates) => `Fijar en ${coordinates}`,
+    radius: "Radio",
     site: "sitio",
     sites: "sitios",
       webglError: "No se ha podido iniciar el mapa: WebGL está desactivado en este navegador.",

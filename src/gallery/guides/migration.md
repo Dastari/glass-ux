@@ -3,6 +3,10 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.19.15 → 0.19.16
+
+No code edits are needed.
+
 ## 0.19.14 → 0.19.15
 
 No code edits are needed in applications. Tests that find these controls by role and name need the

@@ -1157,6 +1157,7 @@ export default defineMessagePack("nl", {
     mapLoadFailedAt: (coordinates) => `De kaart kon niet laden. ${coordinates}`,
     pinAtDragItOrUseThe: (coordinates) => `Vastzetten op ${coordinates}. Versleep het of gebruik de pijltjestoetsen om het te verplaatsen.`,
     pinAt: (coordinates) => `Vastzetten op ${coordinates}`,
+    radius: "Straal",
     site: "locatie",
     sites: "locaties",
       webglError: "De kaart kon niet starten: WebGL is uitgeschakeld in deze browser.",

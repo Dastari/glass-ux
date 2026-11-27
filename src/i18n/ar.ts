@@ -1156,8 +1156,8 @@ export default defineMessagePack("ar", {
     theMapCouldNotLoad: "تعذر تحميل الخريطة.",
     mapLoadFailedAt: (coordinates) => `تعذر تحميل الخريطة. ${coordinates}`,
     pinAtDragItOrUseThe: (coordinates) => `الدبوس في ${coordinates}. اسحبه أو استخدم مفاتيح الأسهم لتحريكه.`,
-    pinAt: (coordinates) => `الدبوس في ${coordinates}
-موقع`,
+    pinAt: (coordinates) => `الدبوس في ${coordinates}`,
+    radius: "نصف القطر",
     site: "موقع",
     sites: "مواقع",
       webglError: "تعذّر بدء الخريطة: WebGL معطّل في هذا المتصفح.",

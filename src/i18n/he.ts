@@ -1157,6 +1157,7 @@ export default defineMessagePack("he", {
     mapLoadFailedAt: (coordinates) => `המפה לא הצליחה לטעון. ${coordinates}`,
     pinAtDragItOrUseThe: (coordinates) => `הצמד ב־${coordinates}. גרור אותו או השתמש במקשי החצים כדי להזיז אותו.`,
     pinAt: (coordinates) => `הצמד ב־${coordinates}`,
+    radius: "רדיוס",
     site: "אתר",
     sites: "אתרים",
       webglError: "לא ניתן להפעיל את המפה: WebGL כבוי בדפדפן זה.",

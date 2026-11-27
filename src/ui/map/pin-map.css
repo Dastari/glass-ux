@@ -98,6 +98,45 @@
     outline-offset: var(--focus-ring-offset);
   }
 
+  /* ── The radius handle: a dot on the circle's east edge (the circle is the areas layer) ── */
+  .fa-pin-map-radius-host {
+    z-index: var(--z-raised);
+  }
+  .fa-pin-map-radius {
+    display: grid;
+    place-items: center;
+    width: var(--target-aa);
+    height: var(--target-aa);
+    border-radius: var(--radius-full);
+    cursor: ew-resize;
+    touch-action: none;
+  }
+  @media (pointer: coarse) {
+    .fa-pin-map-radius {
+      width: var(--target-min);
+      height: var(--target-min);
+    }
+  }
+  .fa-pin-map-radius::before {
+    content: "";
+    width: var(--space-3);
+    height: var(--space-3);
+    border: calc(var(--border-width) * 2) solid var(--accent);
+    border-radius: var(--radius-full);
+    background: var(--canvas);
+    box-shadow: 0 0 0 var(--border-width) var(--canvas), 0 var(--space-half) var(--space-1) var(--shadow-tint);
+  }
+  .fa-pin-map-radius:focus-visible {
+    outline: var(--focus-ring-width) solid var(--accent-ring);
+    outline-offset: calc(var(--focus-ring-offset) * -1);
+  }
+  /* Too small a circle to hold the handle beside the pin: it shows only while focused, so the
+     keyboard can still resize it; zooming in brings it back. */
+  .fa-pin-map-radius-host[data-small] .fa-pin-map-radius:not(:focus-visible) {
+    opacity: 0;
+    pointer-events: none;
+  }
+
   /* ── Controls and credit, over the map ───────────────────────────────────── */
   .fa-pin-map-controls {
     position: absolute;

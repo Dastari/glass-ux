@@ -41,6 +41,58 @@ const POINTS: MapPoint<{
   description: site.address.split(", ").at(-1),
   data: { address: site.address },
 }));
+/** Three fictional work sites around a city, each with its geofence (`radius`, metres). */
+const FENCED: MapPoint<{
+  address: string;
+}>[] = [
+  {
+    id: "fence-yard",
+    lng: 147.272,
+    lat: -42.81,
+    status: "healthy",
+    label: "North yard",
+    radius: 800,
+    data: { address: "Sample Road, Glenorchy" },
+  },
+  {
+    id: "fence-depot",
+    lng: 147.398,
+    lat: -42.873,
+    status: "warning",
+    label: "Harbour depot",
+    radius: 1200,
+    data: { address: "Sample Wharf, Bellerive" },
+  },
+  {
+    id: "fence-quarry",
+    lng: 147.297,
+    lat: -42.968,
+    status: "healthy",
+    label: "Ridge quarry",
+    radius: 2500,
+    data: { address: "Sample Track, Kingston" },
+  },
+];
+
+/** GeoMap framed on its points, each drawn with its area. */
+function FencedMap() {
+  const [selected, setSelected] = useState<string | null>(null);
+  return (
+    <div className="gallery-map-frame" data-testid="map-areas">
+      <GeoMap
+        label="Sites with geofences"
+        config={DEMO_MAP_CONFIG}
+        home={null}
+        frame="points"
+        points={FENCED}
+        selectedId={selected}
+        onSelectedIdChange={setSelected}
+        renderPopup={(point) => <PointPopup point={point} />}
+      />
+    </div>
+  );
+}
+
 const OUTLINE_ONLY: MapConfig = { ...DEMO_MAP_CONFIG, basemap: null };
 const ATTRIBUTION_CONFIG: MapConfig = {
   ...OUTLINE_ONLY,
@@ -213,9 +265,19 @@ export default function MapSection() {
       </Specimen>
 
       <Specimen
+        title="Areas around points"
+        description="A point's radius, in metres, draws a circle of its true size: a site's geofence. It is a faint fill under an accent line at every zoom, so the circles read at street zoom on an overview map."
+        layout="bare"
+        wide
+        specimenKey="map:default:3"
+      >
+        <FencedMap />
+      </Specimen>
+
+      <Specimen
         title="Popups"
         description="The shared popup look (glass-overlay fa-popup), not MapLibre's. Hovering or focusing a marker previews it; clicking or Enter pins it and moves focus inside; Esc closes it and returns focus. The caller renders the content and can add detail once zoomed in."
-        specimenKey="map:default:4"
+        specimenKey="map:default:5"
       >
         <Example label="Point">
           <div className="glass-overlay fa-popup fa-map-popup" data-pinned="">
@@ -247,14 +309,14 @@ export default function MapSection() {
         description="“View as list” swaps the map for the caller's table in the same box; “View as map” in the table's toolbar swaps back. The map keeps its camera while hidden."
         layout="bare"
         wide
-        specimenKey="map:default:5"
+        specimenKey="map:default:6"
       >
         <ListViewExample />
       </Specimen>
 
       <ContainerLab
         description="The map fills whatever box it is given. In small boxes the zoom buttons and then the other controls drop out, while pinch and scroll still zoom, and the credits shorten without losing their source links."
-        specimenKey="map:default:8"
+        specimenKey="map:default:9"
       >
         {() => <LiveMap id="map-lab" className="gallery-map-fill" />}
       </ContainerLab>

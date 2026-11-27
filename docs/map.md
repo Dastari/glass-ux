@@ -35,6 +35,17 @@ licence links. The line folds to that button after five seconds or the first map
 interaction. Zoom buttons collapse separately below 20rem wide or 16rem tall; below
 8rem tall the other map controls also disappear.
 
+## Areas around points
+
+A point's `radius`, in metres, draws a circle of its true size around it, such as a site's
+geofence: a faint fill under an accent line (`--fa-map-area`) at every zoom, so a 25 m to 5 km
+circle reads at street zoom on an overview map. Framing on the points (`frame="points"`) keeps
+each circle whole. `PinMap` takes the same `radius` around its pin, following the pin as it
+moves. With `onRadiusChange` the circle's east edge gets a handle that resizes it: drag it, or
+focus it and use the arrow keys (Page Up and Down step ten times, Home and End go to
+`minRadius` and `maxRadius`). It is a slider named by `radiusLabel` whose value reads as a
+distance ("200 metres"), so a number field beside the map and the handle can share one value.
+
 MapLibre loads lazily. Use the `glassUx()` Vite plugin for its worker asset imports.
 The [Map component page](https://dastari.github.io/glass-ux/components/geo-map/) provides live
 examples, complete source and the exact typed contract for `MapConfig`, `MapPoint` and

@@ -19,7 +19,8 @@ export const MAP_THEME_TOKENS = {
   label: "--fa-map-label",
   labelStrong: "--fa-map-label-strong",
   labelHalo: "--fa-map-label-halo",
-} as const satisfies Record<Exclude<keyof MapTheme, "mode">, string>
+  area: "--fa-map-area",
+} as const satisfies Required<Record<Exclude<keyof MapTheme, "mode">, string>>
 
 const FALLBACK: Rgba = { r: 128, g: 128, b: 128, a: 1 }
 

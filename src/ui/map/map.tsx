@@ -39,6 +39,7 @@ import type { CameraMove, FitPadding, MapEngine, MarkerSlot } from "./engine.js"
 import { isNavKey, nextMarker } from "./nav.js"
 import { boxContains, boxOfPoints, ringsOf, ringsToPath, viewBoxOf, type LngLatBox } from "./projection.js"
 import { CLUSTER_STEPS, MARKER_LABEL_ZOOM, pointsToGeoJSON, type MapStyleInput } from "./style.js"
+import { areasToGeoJSON, withAreaEdges } from "./area.js"
 import { tokenDuration } from "../../lib/motion.js"
 import { observeAppearance, readLength, readMapTheme } from "./theme.js"
 import type { MapAttribution, MapCluster, MapConfig, MapFrame, MapPoint, MapRegion } from "./types.js"
@@ -466,7 +467,9 @@ export function GeoMap<T>({
   const frame: MapFrame = frameProp === "home" && home === null ? "points" : frameProp
   const byId = useMemo(() => new Map(points.map((point) => [point.id, point])), [points])
   const geojson = useMemo(() => pointsToGeoJSON(points), [points])
-  const pointsBox = useMemo(() => boxOfPoints(points, MIN_POINT_SPAN), [points])
+  const areas = useMemo(() => areasToGeoJSON(points), [points])
+  // A point's area takes part in the frame, so "fit the points" shows each circle whole.
+  const pointsBox = useMemo(() => boxOfPoints(withAreaEdges(points), MIN_POINT_SPAN), [points])
   const frameBox: LngLatBox = (frame === "points" && pointsBox) || home?.properties.focus || pointsBox || WORLD
   const frameBoxKey = frameBox.join(",")
 
@@ -476,7 +479,7 @@ export function GeoMap<T>({
   latest.current = { points, byId, popup, frameBox }
 
   const styleInput = useRef<Omit<MapStyleInput, "theme"> | null>(null)
-  styleInput.current = { basemap: config.basemap, origin: typeof window === "undefined" ? undefined : window.location.href, home: home ?? null, regions, points: geojson }
+  styleInput.current = { basemap: config.basemap, origin: typeof window === "undefined" ? undefined : window.location.href, home: home ?? null, regions, points: geojson, areas }
 
   /* Engine lifecycle: start once the frame is known (home settled; points loaded when framing points). */
   const canStart = home !== undefined && !(frame === "points" && loading)
@@ -569,7 +572,7 @@ export function GeoMap<T>({
     if (!engine || !root || phase !== "ready") return
     engine.setStyleInput({ ...styleInput.current!, theme: readMapTheme(root) })
     updateView(engine)
-  }, [phase, geojson, home, regions, config.basemap, updateView])
+  }, [phase, geojson, areas, home, regions, config.basemap, updateView])
 
   useEffect(() => {
     const root = rootRef.current

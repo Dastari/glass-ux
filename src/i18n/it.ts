@@ -1157,6 +1157,7 @@ export default defineMessagePack("it", {
     mapLoadFailedAt: (coordinates) => `Impossibile caricare la mappa. ${coordinates}`,
     pinAtDragItOrUseThe: (coordinates) => `Blocca su ${coordinates}. Trascinalo o usa i tasti freccia per spostarlo.`,
     pinAt: (coordinates) => `Blocca su ${coordinates}`,
+    radius: "Raggio",
     site: "sito",
     sites: "siti",
       webglError: "Impossibile avviare la mappa: WebGL è disattivato in questo browser.",

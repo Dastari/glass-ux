@@ -27,6 +27,7 @@ export const mapMessages = defineMessages("map", {
   mapLoadFailedAt: (coordinates: string) => `The map could not load. ${coordinates}`,
   pinAtDragItOrUseThe: (coordinates: string) => `Pin at ${coordinates}. Drag it or use the arrow keys to move it.`,
   pinAt: (coordinates: string) => `Pin at ${coordinates}`,
+  radius: "Radius",
   site: 'site',
   sites: 'sites',
   webglError: "The map could not start: this browser has WebGL turned off.",

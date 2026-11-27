@@ -1157,6 +1157,7 @@ export default defineMessagePack("fr", {
     mapLoadFailedAt: (coordinates) => `La carte n'a pas pu se charger. ${coordinates}`,
     pinAtDragItOrUseThe: (coordinates) => `Épinglez sur ${coordinates}. Faites-le glisser ou utilisez les touches fléchées pour le déplacer.`,
     pinAt: (coordinates) => `Épingler sur ${coordinates}`,
+    radius: "Rayon",
     site: "site",
     sites: "sites",
       webglError: "La carte n’a pas pu démarrer : WebGL est désactivé dans ce navigateur.",

@@ -4,7 +4,33 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
-## 0.19.14
+## 0.19.15
+
+### Added
+
+- `WindowKindDefinition.titleVisible` (default true). False hides the title bar's title so the subtitle
+  leads the bar; the title stays the window's accessible name, dock label, switcher row and the
+  controls' labels, and shows again where the bar hides the subtitle (#38). `WindowFrame.AppBar` takes
+  the same choice as `titleHidden`, and a popped-out window carries `data-window-kind`.
+- `EntityIdentity` `tags`: labels such as a device's type ("Router") before the state badge on the
+  header and compact title lines, at the state's size (#39). `EntityTag` is exported. The `slots.state`
+  docs now point at `EntityIdentity.State`, the library's state badge.
+
+### Fixed
+
+- DataTable: a column `cell` that returns a string draws it as `TextCell` does, on one line with an
+  ellipsis and the full text on hover, as documented. TanStack's `flexRender` had turned the renderer
+  into a component, so the string skipped the text wrapper, wrapped, and in an expanded "+N" detail rode
+  over its label and lost its last line (#37). Hooks in a renderer keep working.
+- Label in Name (WCAG 2.5.3, axe 4.14), #36:
+  - ContextAvatar draws its initials with CSS from `data-initials`, as Avatar does, so a chip or row
+    around it is named by its title alone.
+  - A DataTable group header is named by what it shows (label, count, detail); "Endpoints, 117 devices"
+    is its description. The "·" separators are no longer read.
+  - SessionNav rows drawn by `renderSession` are named by their content, like the default rows.
+  - TimerChip is named by its face ("0:42 · #4821"); "Timer on ticket #4821, running for 0:42" is its
+    description.
+
 
 ### Changed
 

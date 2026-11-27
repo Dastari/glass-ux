@@ -3,6 +3,21 @@
 Upgrade steps between releases. Each section lists the changes that need code edits first,
 then behaviour changes to review. The [changelog](../CHANGELOG.md) lists everything else.
 
+## 0.19.14 → 0.19.15
+
+No code edits are needed in applications. Tests that find these controls by role and name need the
+new names (WCAG 2.5.3):
+
+| Control | Was named | Now named | Moved to the description |
+| --- | --- | --- | --- |
+| DataTable group header | "Endpoints, 117 devices" | "Endpoints 117 Dell ×40 · HP ×39" (label, count, detail) | "Endpoints, 117 devices" |
+| SessionNav row drawn by `renderSession` | the session's title | the content you draw | as before |
+| TimerChip | "Timer on ticket #4821, running for 0:42" | "0:42 · #4821" | the sentence |
+
+ContextAvatar initials have no text any more; read `data-initials` on `.fa-context-avatar-initials`.
+A `renderSession` row must show the session's title as text. A column `cell` returning a string now
+renders inside `.fa-dt-text`; an empty string still renders nothing.
+
 ## 0.19.13 → 0.19.14
 
 No code edits are needed. In light mode with the Flat style the canvas is a neutral off-white

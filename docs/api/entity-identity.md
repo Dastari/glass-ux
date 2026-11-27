@@ -31,6 +31,7 @@ Present a host-defined entity with its glyph or avatar, readable name and suppor
 | slots | `EntitySlots \| undefined` | See type | no | — | Overrides for named content slots. |
 | state | `EntityState \| undefined` | See type | no | — | Controlled view state, including loading, empty and error states. |
 | tabs | `ReactNode` | See type | no | — | L2 tabs, header only. |
+| tags | `readonly (string \| EntityTag)[] \| undefined` | See type | no | — | Labels on the title line before the state badge, such as the device's type ("Router"): header and compact tiers, drawn as badges in the state's size and gap. A string is a neutral badge. Rows and chips leave them out. |
 | target | `T \| undefined` | See type | no | — | The entity the actions run against. |
 | tier | `EntityTierProp \| undefined` | "header", "compact", "icon", "auto", "row", "chip" | no | "auto" | A tier, or `auto` (default) to let the container decide on both axes (see tier.ts). |
 | title | `ReactNode` | See type | no | — | Rendered instead of the name (search highlights). The name stays the accessible text. |

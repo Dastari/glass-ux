@@ -14,7 +14,7 @@ against.
 | Prop | Type | Valid options | Required | Default | Description |
 | --- | --- | --- | --- | --- | --- |
 | label | `string` | See type | yes | — | What it runs against: "#4821". |
-| name | `string \| undefined` | See type | no | — | Accessible noun: "Timer on ticket #4821". |
+| name | `string \| undefined` | See type | no | — | What the timer is, for its description: "Timer on ticket #4821". The chip is named by its face. |
 | startedAt | `number` | See type | yes | — | When the timer started (epoch ms). |
 
 Inherited properties:

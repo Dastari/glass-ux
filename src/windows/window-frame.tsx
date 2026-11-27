@@ -91,6 +91,11 @@ export interface WindowAppBarProps extends Omit<
   controls?: ReactNode;
   /** id for the title, so the frame can be labelled by it. */
   titleId?: string;
+  /**
+   * Hide the title visually while it stays the heading's text, so the subtitle leads the bar.
+   * Ignored without a subtitle; the title shows again where the bar hides the subtitle.
+   */
+  titleHidden?: boolean;
   /** Receives the actions container, for content that portals its own actions in. */
   actionsRef?: Ref<HTMLDivElement>;
 }
@@ -103,10 +108,12 @@ function AppBar({
   actions,
   controls,
   titleId,
+  titleHidden,
   actionsRef,
   className,
   ...rest
 }: WindowAppBarProps) {
+  const hasSubtitle = subtitle !== undefined && subtitle !== null && subtitle !== false && subtitle !== "";
   return (
     <header {...rest} className={cx("fa-window-appbar", className)}>
       {icon ? (
@@ -114,7 +121,10 @@ function AppBar({
           {icon}
         </span>
       ) : null}
-      <div className="fa-window-heading">
+      <div
+        className="fa-window-heading"
+        data-title-hidden={titleHidden && hasSubtitle ? "" : undefined}
+      >
         <h2 className="fa-window-title" id={titleId}>
           <TruncatedText>{title}</TruncatedText>
         </h2>

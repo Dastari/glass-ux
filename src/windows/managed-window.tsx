@@ -566,6 +566,7 @@ export const ManagedWindow = /* @__PURE__ */ memo(function ManagedWindow({ entry
               subtitle={getWindowKind(entry.kind)?.renderSubtitle?.(entry.params) ?? subtitle}
               scope={<WindowScopeChip scope={entry.scope} />}
               titleId={titleId}
+              titleHidden={getWindowKind(entry.kind)?.titleVisible === false}
               actionsRef={setActionsSlot}
               onPointerDown={beginDrag}
               onDoubleClick={(event) => {

@@ -731,7 +731,7 @@
   }
   .fa-dt-group-count::before,
   .fa-dt-group-detail::before {
-    content: "·";
+    content: "·" / ""; /* a separator to see, not a word of the header's name */
     margin-inline-end: var(--space-2);
   }
   .fa-dt-group-detail {

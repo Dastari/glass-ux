@@ -559,7 +559,7 @@ export interface TimerChipProps extends Omit<
   startedAt: number;
   /** What it runs against: "#4821". */
   label: string;
-  /** Accessible noun: "Timer on ticket #4821". */
+  /** What the timer is, for its description: "Timer on ticket #4821". The chip is named by its face. */
   name?: string;
 }
 
@@ -591,13 +591,14 @@ export function TimerChip({
       type="button"
       {...rest}
       className={cx("fa-shell-timer fa-pressable", className)}
-      aria-label={messages.runningFor(name ?? messages.timerOn(label), text)}
+      // Named by its face, "0:42 · #4821" (WCAG 2.5.3); the sentence is the description.
+      aria-description={messages.runningFor(name ?? messages.timerOn(label), text)}
       data-hours={elapsed >= 3_600_000 ? "" : undefined}
     >
       <ToneDot tone="data" marker="pulse" />
       <span className="fa-shell-timer-time" data-numeric data-timer-time="">
         {text}
-      </span>
+      </span>{" "}
       <span className="fa-shell-timer-ticket" data-timer-ticket="">
         · {label}
       </span>

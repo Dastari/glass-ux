@@ -60,6 +60,18 @@ describe("window subtitle nodes", () => {
     expect(link.closest("p")).toBeNull()
   })
 
+  it("hides the title visually behind a subtitle, keeping it the heading's text (#38)", () => {
+    render(<WindowFrame.AppBar title="Web page" subtitle={<a href="#c">Chip</a>} titleId="t" titleHidden />)
+    const heading = screen.getByRole("heading", { name: "Web page" })
+    expect(heading.id).toBe("t")
+    expect(heading.parentElement).toHaveAttribute("data-title-hidden", "")
+  })
+
+  it("keeps the title shown when there is no subtitle to lead the bar", () => {
+    render(<WindowFrame.AppBar title="Web page" titleId="t" titleHidden />)
+    expect(screen.getByRole("heading", { name: "Web page" }).parentElement).not.toHaveAttribute("data-title-hidden")
+  })
+
   it("keeps a string in its paragraph", () => {
     render(<WindowFrame.AppBar title="Terminal" subtitle="C-106" titleId="t" />)
     const text = screen.getByText("C-106")

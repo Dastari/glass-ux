@@ -78,10 +78,23 @@ export interface EntityPortrait {
 export interface EntitySlots {
   /** Replaces the corner badge. */
   badge?: ReactNode
-  /** Replaces the state badge (header and compact). */
+  /**
+   * Replaces the state badge (header and compact). `EntityIdentity.State` draws the library's
+   * state badge (`size="sm"` in compact), so a slot can add to it without copying it. For
+   * neutral labels beside the state, such as a type, use `tags`.
+   */
   state?: ReactNode
   /** Replaces the actions (header: an ActionBar). */
   actions?: ReactNode
+}
+
+/** A label on the title line beside the state: "Router", "Signed in". */
+export interface EntityTag {
+  label: string
+  /** Default neutral. */
+  tone?: BadgeTone
+  /** An icon without a size, drawn before the label. */
+  icon?: ReactNode
 }
 
 export type EntityTierProp = EntityTier | "auto"
@@ -108,6 +121,12 @@ export interface EntityIdentityProps<T = unknown> extends Omit<HTMLAttributes<HT
   state?: EntityState
   /** Item count shown by the component. */
   count?: EntityCount
+  /**
+   * Labels on the title line before the state badge, such as the device's type ("Router"):
+   * header and compact tiers, drawn as badges in the state's size and gap. A string is a
+   * neutral badge. Rows and chips leave them out.
+   */
+  tags?: readonly (string | EntityTag)[]
   /** Data only (R2.2): model · firmware · IP. An array joins with " · ". */
   facts?: ReactNode | readonly string[]
   /** A row's second line. Defaults to the facts. */
@@ -263,6 +282,24 @@ function EntityTile({ icon, image, portrait, state, count, labelled, badge }: En
 }
 
 
+/** The tags then the state, on a header or compact title line. */
+function TitleBadges({ tags, state, size }: { tags?: readonly (string | EntityTag)[]; state: ReactNode; size: "sm" | "md" }) {
+  if (!tags?.length && !state) return null
+  return (
+    <span className="fa-entity-state">
+      {tags?.map((tag, index) => {
+        const { label, tone = "neutral", icon } = typeof tag === "string" ? { label: tag } : tag
+        return (
+          <Badge key={`${index}:${label}`} tone={tone} size={size} icon={icon} className="fa-entity-tag">
+            {label}
+          </Badge>
+        )
+      })}
+      {state}
+    </span>
+  )
+}
+
 /** The state as a pill: the badge's tone and marker. */
 function EntityStateBadge({ state, size = "md" }: { state: EntityState; size?: "sm" | "md" }) {
   return (
@@ -290,6 +327,7 @@ interface Parts<T> {
   state?: EntityState
   /** Item count shown by the component. */
   count?: EntityCount
+  tags?: readonly (string | EntityTag)[]
   facts?: EntityIdentityProps["facts"]
   secondary?: ReactNode
   metric?: ReactNode
@@ -319,9 +357,9 @@ interface TierProps<T> {
 }
 
 function split<T>({ tier: _tier, fill: _fill, target: _target, ...props }: EntityIdentityProps<T>, targets: readonly T[]): TierProps<T> {
-  const { name, title, kind, icon, image, portrait, state, count, facts, secondary, metric, tabs, actions, maxActions, href, onOpen, heading, size, onRemove, preview, slots, ...dom } = props
+  const { name, title, kind, icon, image, portrait, state, count, tags, facts, secondary, metric, tabs, actions, maxActions, href, onOpen, heading, size, onRemove, preview, slots, ...dom } = props
   return {
-    parts: { name, title, kind, icon, image, portrait, state, count, facts, secondary, metric, tabs, actions, targets, maxActions, href, onOpen, heading, size, onRemove, preview, slots },
+    parts: { name, title, kind, icon, image, portrait, state, count, tags, facts, secondary, metric, tabs, actions, targets, maxActions, href, onOpen, heading, size, onRemove, preview, slots },
     dom,
   }
 }
@@ -433,7 +471,7 @@ function useHeaderFit(rowRef: RefObject<HTMLDivElement | null>, hasMetric: boole
 }
 
 function HeaderTier<T>({ parts, dom }: TierProps<T>) {
-  const { name, title, icon, image, portrait, state, count, facts, metric, tabs, actions, targets, maxActions, href, onOpen, heading = "h1", slots } = parts
+  const { name, title, icon, image, portrait, state, count, tags, facts, metric, tabs, actions, targets, maxActions, href, onOpen, heading = "h1", slots } = parts
   const Heading = heading
   const factsNode = factsText(facts)
   const rowRef = useRef<HTMLDivElement>(null)
@@ -458,7 +496,7 @@ function HeaderTier<T>({ parts, dom }: TierProps<T>) {
               <Heading className="fa-entity-title">
                 <TitleText name={name} title={title} href={href} onOpen={onOpen} />
               </Heading>
-              {stateNode ? <span className="fa-entity-state">{stateNode}</span> : null}
+              <TitleBadges tags={tags} state={stateNode} size="md" />
             </div>
             {factsNode ? <p className="fa-entity-facts">{factsNode}</p> : null}
           </div>
@@ -472,7 +510,7 @@ function HeaderTier<T>({ parts, dom }: TierProps<T>) {
 }
 
 function CompactTier<T>({ parts, dom }: TierProps<T>) {
-  const { name, title, kind, icon, image, portrait, state, count, facts, actions, targets, href, onOpen, heading = "h2", slots } = parts
+  const { name, title, kind, icon, image, portrait, state, count, tags, facts, actions, targets, href, onOpen, heading = "h2", slots } = parts
   const Heading = heading
   const factsNode = factsText(facts)
   const stateNode = slots?.state !== undefined ? slots.state : state ? <EntityStateBadge state={state} size="sm" /> : null
@@ -486,7 +524,7 @@ function CompactTier<T>({ parts, dom }: TierProps<T>) {
             <Heading className="fa-entity-title">
               <TitleText name={name} title={title} href={href} onOpen={onOpen} />
             </Heading>
-            {stateNode ? <span className="fa-entity-state">{stateNode}</span> : null}
+            <TitleBadges tags={tags} state={stateNode} size="sm" />
           </div>
           {factsNode ? <Line className="fa-entity-facts">{factsNode}</Line> : null}
         </div>

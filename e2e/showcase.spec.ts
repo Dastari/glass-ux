@@ -70,14 +70,14 @@ test("studio demo creates a project with typed fields and groups it by status @r
   await studio.getByRole("button", { name: "Projects", exact: true }).click();
   await expect(studio.locator(".showcase-metrics")).toHaveCount(0);
   const complete = studio.getByRole("button", {
-    name: /^Complete, 2 projects/,
+    name: /^Complete 2\b/,
   });
   await expect(complete).toHaveAttribute("aria-expanded", "false");
   await expect(studio.getByText("Cedar house")).toHaveCount(0);
   await complete.click();
   await expect(studio.getByText("Cedar house")).toBeVisible();
   await expect(
-    studio.getByRole("button", { name: /^In progress, 5 projects/ }),
+    studio.getByRole("button", { name: /^In progress 5\b/ }),
   ).toBeVisible();
 
   const search = studio.getByRole("searchbox");

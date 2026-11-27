@@ -2,7 +2,7 @@ import demoLogoUrl from "../assets/glass-ux.svg?url"
 import { PORTRAITS } from "../fixtures/organisations.js"
 import type { ReactNode } from "react"
 import { ContainerLab, Example, Matrix, OnCanvas, Rules, SectionPage, Specimen, SwapSlot, TokenTable } from "../kit.js"
-import { IconArchive, IconCode, IconCopy, IconOrganisation, IconPopOut, IconTickets, IconUser } from "../../icons/generated/icons.js"
+import { IconArchive, IconCode, IconCopy, IconOrganisation, IconPopOut, IconRouter, IconTickets, IconUser } from "../../icons/generated/icons.js"
 import { defineActions } from "../../ui/actions/index.js"
 import { EntityIdentity, type EntityIdentityProps, type EntityState } from "../../ui/entity/index.js"
 import { toast } from "../../ui/toast/index.js"
@@ -36,6 +36,7 @@ const TICKET: Item = { id: "7102", name: "#7102", kind: "Ticket" } // tokens:all
 const PERSON: Item = { id: "avery", name: "Avery Quinn", kind: "User" }
 const SCRIPT: Item = { id: "clear-printqueue", name: "Clear-PrintQueue.ps1", kind: "Script" }
 const APP: Item = { id: "glassUx", name: "Glass UX", kind: "Application" }
+const ROUTER: Item = { id: "edge-rt1", name: "EDGE-RT1", kind: "Device" }
 
 const open = (item: Item) => () => void toast.info(`Open ${item.name}`)
 
@@ -129,6 +130,17 @@ export default function EntityIdentitySection() {
         <Example label="Icon">
           <EntityIdentity {...entity(APP)} tier="icon" icon={<IconCode />} image={<img src={demoLogoUrl} alt="" />} state={{ id: "live", label: "Live", tone: "success" }} />
         </Example>
+      </Specimen>
+
+      <Specimen title="Tags" description="Labels such as a device's type sit before the state on the header and compact title lines, at the state's size. Rows and chips leave them out." layout="stack">
+        <div className="gallery-entity-headers" data-testid="entity-tags">
+          <div className="gallery-entity-window">
+            <EntityIdentity {...entity(ROUTER)} tier="header" heading="h4" icon={<IconRouter />} tags={["Router"]} state={{ id: "no-agent", label: "No agent", tone: "warning" }} facts={["RX-400", "10.13.4.1"]} />
+          </div>
+          <div className="gallery-entity-fixed">
+            <EntityIdentity {...entity(ROUTER)} tier="compact" heading="h4" icon={<IconRouter />} tags={["Router"]} state={{ id: "no-agent", label: "No agent", tone: "warning" }} facts={["RX-400", "10.13.4.1"]} />
+          </div>
+        </div>
       </Specimen>
 
       <Specimen title="Nested" description="An entity in another's slot keeps its own tier: a person's chip in a header's or compact entity's state slot reads as a chip, not as the title.">

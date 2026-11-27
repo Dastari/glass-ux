@@ -17,6 +17,7 @@ import { IconChevronDown, IconChevronUp } from "../../icons/generated/icons.js";
 import { Button } from "../button/index.js";
 import { SelectCheckbox } from "./checkbox.js";
 import { metaOf } from "./columns.js";
+import { TextCell } from "./cells/text.js";
 import { EditableValue } from "./editing.js";
 import { levelStyle, RowExpander } from "./row-expander.js";
 import { countRender } from "./debug.js";
@@ -109,14 +110,35 @@ export function renderCellContent(content: ReactNode) {
   return content;
 }
 
+type CellRenderer = (context: unknown) => ReactNode;
+
+/**
+ * A column's `cell` function, rendered as its own component (as TanStack's flexRender does,
+ * so hooks in it keep their own state), with a string or number it returns drawn as
+ * truncating text. flexRender hands back the component's element, never the string (#37).
+ */
+function RenderedCell({ render, context }: { render: CellRenderer; context: unknown }) {
+  const content = render(context);
+  // A string reads as TextCell does: one line, an ellipsis, the full text on hover. An empty
+  // string stays empty, as it was; null and undefined render nothing.
+  if (typeof content === "string" && content !== "") return <TextCell>{content}</TextCell>;
+  return typeof content === "number" ? renderCellContent(content) : content;
+}
+
 function renderedContent<T extends RowData>(
   cell: Cell<DataTableFeatures, T, unknown>,
 ) {
   const { columnDef } = cell.column;
-  // A column without a renderer shows its value as truncating text. (TanStack's default
-  // cell renders through a component, which would bypass the text wrapper.)
+  // A column without a renderer shows its value as truncating text.
   if (columnDef.meta?.plain)
     return renderCellContent(cell.renderValue() as ReactNode);
+  if (typeof columnDef.cell === "function")
+    return (
+      <RenderedCell
+        render={columnDef.cell as CellRenderer}
+        context={cell.getContext()}
+      />
+    );
   return renderCellContent(
     flexRender(columnDef.cell, cell.getContext()) as ReactNode,
   );

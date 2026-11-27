@@ -99,7 +99,7 @@ describe("SessionNav renderOrganisation", () => {
 });
 
 describe("SessionNav renderSession", () => {
-  it("draws the host's content in the row, which still selects and keeps its name", () => {
+  it("draws the host's content in the row, which still selects and is named by that content", () => {
     const onSelectedIdChange = vi.fn();
     render(
       <SessionNav
@@ -110,11 +110,12 @@ describe("SessionNav renderSession", () => {
       />,
     );
     expect(screen.getByTestId("own-s-2")).toHaveTextContent("Drawn Sample two");
-    const row = rowOf("Sample two");
+    const row = rowOf("Drawn Sample two");
     expect(row).toContainElement(screen.getByTestId("own-s-2"));
+    expect(row).not.toHaveAttribute("aria-label");
     fireEvent.click(screen.getByTestId("own-s-2"));
     expect(onSelectedIdChange).toHaveBeenCalledWith("s-2", expect.objectContaining({ item: sessions[1] }));
-    expect(rowOf("Sample two")).toHaveAttribute("aria-current", "page");
+    expect(rowOf("Drawn Sample two")).toHaveAttribute("aria-current", "page");
   });
 
   it("keeps the default row where it returns undefined", () => {
@@ -124,7 +125,7 @@ describe("SessionNav renderSession", () => {
   });
 
   it("keeps each row's ⋯ menu", () => {
-    render(<SessionNav sessions={sessions} onArchive={() => {}} renderSession={() => <i>Own</i>} />);
+    render(<SessionNav sessions={sessions} onArchive={() => {}} renderSession={(session) => <i>{session.title}</i>} />);
     expect(screen.getAllByRole("button", { name: /Sample one/ }).length).toBeGreaterThan(1);
   });
 });

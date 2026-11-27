@@ -304,6 +304,8 @@
   .fa-entity-state {
     display: inline-flex;
     flex: none;
+    align-items: center;
+    gap: var(--space-1-5);
     min-width: 0;
   }
   .fa-entity[data-tier="header"] .fa-entity-facts:not(:where(.fa-entity[data-tier="header"] .fa-entity *)) {

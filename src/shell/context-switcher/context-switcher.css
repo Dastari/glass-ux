@@ -97,6 +97,9 @@
   .fa-context-avatar[data-logo] .fa-context-avatar-image {
     object-fit: contain;
   }
+  .fa-context-avatar-initials::before {
+    content: attr(data-initials);
+  }
   .fa-context-avatar-initials {
     --_ratio: 0.42; /* initials' size as a share of the face */
     font-size: calc(var(--_size) * var(--_ratio));

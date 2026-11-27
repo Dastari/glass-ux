@@ -4,6 +4,7 @@ import { ContainerLab, Example, Rules, SectionPage, Specimen, TokenTable } from 
 import {
   IconEndpoint,
   IconFullscreenExit,
+  IconGlobe,
   IconKeyboard,
   IconCopy,
   IconRefresh,
@@ -510,6 +511,24 @@ function SubjectSpecimen() {
   )
 }
 
+/** A kind with titleVisible: false: the subject leads the bar; "Web page" stays the window's name. */
+function HiddenTitleSpecimen() {
+  return (
+    <div className="gallery-wm-box" data-size="sm" data-testid="window-hidden-title">
+      <WindowFrame.Root focused state="floating" aria-labelledby="window-hidden-title-title">
+        <WindowFrame.AppBar
+          icon={<IconGlobe />}
+          title="Web page"
+          subtitle={subjectChip("NST-C106")}
+          titleId="window-hidden-title-title"
+          titleHidden
+          controls={<WindowFrame.Controls title="Web page" onClose={() => undefined} />}
+        />
+      </WindowFrame.Root>
+    </div>
+  )
+}
+
 /** A dock with real entries: one focused, one minimised, one popped out. */
 function DockSpecimen() {
   const [manager] = useState(() => {
@@ -555,6 +574,10 @@ export default function WindowsSection() {
     <SectionPage>
       <Specimen title="Subtitle as an identity" description="A kind's renderSubtitle draws the subject in the title bar and the switcher. Its subtitle text stays the dock item's name." layout="stack">
         <SubjectSpecimen />
+      </Specimen>
+
+      <Specimen title="Hidden title" description="A kind with titleVisible: false shows its subtitle as the heading line. The title stays the window's name, the dock item's label and the controls' labels." layout="stack">
+        <HiddenTitleSpecimen />
       </Specimen>
 
       <Specimen title="Anatomy" description="A view in a frame (R14.1). The body supplies its actions and live state through slots; the frame is the same for every kind." wide layout="bare">

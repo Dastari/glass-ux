@@ -348,7 +348,7 @@ export default function WindowsSection() {
         wide
         layout="bare"
         backdrop
-        specimenKey="windows:default:6"
+        specimenKey="windows:default:7"
       >
         <MiniWorkspace />
       </Specimen>
@@ -359,7 +359,7 @@ export default function WindowsSection() {
         wide
         layout="bare"
         backdrop
-        specimenKey="windows:default:7"
+        specimenKey="windows:default:8"
       >
         <DashboardWorkspace />
       </Specimen>

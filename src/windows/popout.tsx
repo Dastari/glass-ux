@@ -128,6 +128,7 @@ export function PopoutWindow({ id, productName, scopes }: PopoutWindowProps) {
         state="popout"
         aria-labelledby={titleId}
         data-window-id={entry.id}
+        data-window-kind={entry.kind}
         data-fullscreen={fullscreen ? "" : undefined}
       >
         <WindowFrame.AppBar
@@ -136,6 +137,7 @@ export function PopoutWindow({ id, productName, scopes }: PopoutWindowProps) {
           subtitle={getWindowKind(entry.kind)?.renderSubtitle?.(entry.params) ?? description.subtitle}
           scope={<WindowScopeChip scope={entry.scope} />}
           titleId={titleId}
+          titleHidden={getWindowKind(entry.kind)?.titleVisible === false}
           actionsRef={setActionsSlot}
           controls={
             <WindowFrame.Controls

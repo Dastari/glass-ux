@@ -86,7 +86,9 @@ describe("ContextSwitcher for another kind of context", () => {
       </>,
     );
     expect(screen.getByRole("img", { name: "Atlas redesign" }).querySelector(".fa-context-avatar-icon")).not.toBeNull();
-    expect(screen.getByRole("img", { name: "Harbour survey" })).toHaveTextContent("HS");
+    const face = screen.getByRole("img", { name: "Harbour survey" });
+    expect(face.textContent).toBe("");
+    expect(face.querySelector(".fa-context-avatar-initials")).toHaveAttribute("data-initials", "HS");
     expect(screen.getByRole("img", { name: "All projects" })).toHaveAttribute("data-tint", "all");
   });
 });

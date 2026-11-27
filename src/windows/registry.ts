@@ -31,6 +31,14 @@ export interface WindowKindDefinition<P extends WindowParams = WindowParams> {
    */
   renderSubtitle?: (params: P) => ReactNode
   /**
+   * Show the title in the title bar. Default true. False suits a window its icon, subtitle and
+   * content already describe: the subtitle becomes the bar's heading line, and the title stays
+   * the window's accessible name, dock label, switcher row and the controls' labels ("Close …").
+   * The title shows again wherever the bar hides the subtitle (a narrow or shaded window), and
+   * when there is no subtitle.
+   */
+  titleVisible?: boolean
+  /**
    * Wrap the window's dock item. A dock item is an icon button and cannot hold a chip, so this is
    * where its subject's actions go: `(item) => <ActionContextMenu set={…} targets={…} label={…}>{item}</ActionContextMenu>`.
    */

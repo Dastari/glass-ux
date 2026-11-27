@@ -6,6 +6,7 @@ import { ContainerLab, Example, SectionPage, Specimen } from "../kit.js";
 import {
   IconEndpoint,
   IconFullscreenExit,
+  IconGlobe,
   IconKeyboard,
   IconCopy,
   IconRefresh,
@@ -640,6 +641,24 @@ function SubjectSpecimen() {
   );
 }
 
+/** A kind with titleVisible: false: the subject leads the bar; "Web page" stays the window's name. */
+function HiddenTitleSpecimen() {
+  return (
+    <div className="gallery-wm-box" data-size="sm" data-testid="window-hidden-title">
+      <WindowFrame.Root focused state="floating" aria-labelledby="window-hidden-title-title">
+        <WindowFrame.AppBar
+          icon={<IconGlobe />}
+          title="Web page"
+          subtitle={subjectChip("NST-C106")}
+          titleId="window-hidden-title-title"
+          titleHidden
+          controls={<WindowFrame.Controls title="Web page" onClose={() => undefined} />}
+        />
+      </WindowFrame.Root>
+    </div>
+  );
+}
+
 /** A dock with real entries: one focused, one minimised, one popped out. */
 function DockSpecimen() {
   const [manager] = useState(() => {
@@ -676,11 +695,20 @@ export default function WindowsSection() {
       </Specimen>
 
       <Specimen
+        title="Hidden title"
+        description="A kind with titleVisible: false shows its subtitle as the heading line. The title stays the window's name, the dock item's label and the controls' labels."
+        layout="stack"
+        specimenKey="windows:default:1"
+      >
+        <HiddenTitleSpecimen />
+      </Specimen>
+
+      <Specimen
         title="Anatomy"
         description="A view in a frame (R14.1). The body supplies its actions and live state through slots; the frame is the same for every kind."
         wide
         layout="bare"
-        specimenKey="windows:default:1"
+        specimenKey="windows:default:2"
       >
         <div className="gallery-wm-anatomy">
           <StaticFrame size="lg" className="gallery-wm-annotated" />
@@ -700,7 +728,7 @@ export default function WindowsSection() {
         description="The layout is state, not position: a window keeps its intent (tiled, floating) when the screen changes size."
         wide
         layout="bare"
-        specimenKey="windows:default:2"
+        specimenKey="windows:default:3"
       >
         <div className="gallery-wm-states">
           <Example label="Tiled: a column beside the page (default at 1920px and wider)">
@@ -726,7 +754,7 @@ export default function WindowsSection() {
         description="Wrap an action in Window.Action to give it a priority. When the app bar runs out of room the title and scope chip give way first, then secondary actions fold into a trailing More menu, last first; a primary action and the window controls always stay."
         wide
         layout="stack"
-        specimenKey="windows:default:4"
+        specimenKey="windows:default:5"
       >
         <TerminalFrame width="wide" />
         <TerminalFrame width="medium" />
@@ -737,7 +765,7 @@ export default function WindowsSection() {
         title="Status bar"
         description="Background state lives here (R14.6): never a banner in the body. The toned item never truncates; metadata gives way first."
         layout="stack"
-        specimenKey="windows:default:5"
+        specimenKey="windows:default:6"
       >
         <Example label="Live">
           <StaticFrame size="sm" status="success" statusLabel="Connected" />
@@ -766,7 +794,7 @@ export default function WindowsSection() {
         wide
         layout="bare"
         backdrop
-        specimenKey="windows:default:6"
+        specimenKey="windows:default:7"
       >
         <MiniWorkspace />
       </Specimen>
@@ -777,14 +805,14 @@ export default function WindowsSection() {
         wide
         layout="bare"
         backdrop
-        specimenKey="windows:default:7"
+        specimenKey="windows:default:8"
       >
         <DashboardWorkspace />
       </Specimen>
 
       <ContainerLab
         description="The frame in a table row, a header, a grid tile, a pane and a tall narrow column. Short frames keep the title bar; narrow ones shed the icon and subtitle."
-        specimenKey="windows:default:9"
+        specimenKey="windows:default:10"
       >
         {() => (
           <div className="gallery-wm-fill">

@@ -10,6 +10,7 @@ export {
   type EntityIdentitySkeletonProps,
   type EntityPortrait,
   type EntitySlots,
+  type EntityTag,
   type EntityState,
   type EntityTierProp,
 } from "./entity-identity.js"

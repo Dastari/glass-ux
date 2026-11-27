@@ -83,9 +83,10 @@ export interface SessionNavProps {
   /**
    * Draw a session's row yourself, such as its EntityIdentity at the row tier with the session's
    * state and organisation, in place of the title, organisation code and state. The row stays the
-   * nav's: selection, the current marker, rename, right-click and ⋯ work as before, and its
-   * accessible name is still the session's title, so draw the title in it: speech input names a
-   * control by what it shows (WCAG 2.5.3). Draw nothing interactive here (the row is a button);
+   * nav's: selection, the current marker, rename, right-click and ⋯ work as before. The row is
+   * named by what you draw, as speech input names a control by what it shows (WCAG 2.5.3), so
+   * draw the session's title in it as text; the organisation's full name, the state and unread
+   * are its description. Draw nothing interactive here (the row is a button);
    * `renderOrganisation` is the place for a chip with actions. Return undefined for the default.
    */
   renderSession?: (session: AiSession) => ReactNode;
@@ -432,8 +433,7 @@ export function SessionNav({
             aria-current={active ? "page" : undefined}
             // Named by what the row shows (WCAG 2.5.3): the title, the organisation's code, the
             // state and the time. The organisation's full name and unread go in the description.
-            // A host's own drawing keeps the session's title as the name: draw the title in it.
-            aria-label={own ? session.title : undefined}
+            // A host's own drawing names its row the same way, by its content.
             aria-description={describeSession() || undefined}
             data-unread={session.unread ? "" : undefined}
             onClick={(event) =>

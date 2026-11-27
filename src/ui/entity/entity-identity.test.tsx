@@ -74,3 +74,34 @@ describe("EntityIdentity removable chip", () => {
     expect(screen.getByRole("group", { name: "Sample" }).contains(removeButton())).toBe(true);
   });
 });
+
+describe("EntityIdentity tags (#39)", () => {
+  const state = { id: "no-agent", label: "No agent", tone: "warning" as const };
+  it("draws tags before the state on the header and compact title lines, at the state's size", () => {
+    for (const [tier, size] of [["header", "md"], ["compact", "sm"]] as const) {
+      const { container, unmount } = render(
+        <EntityIdentity tier={tier} name="EDGE-RT1" kind="Device" state={state} tags={["Router", { label: "Signed in", tone: "info" }]} />,
+      );
+      const line = container.querySelector(".fa-entity-state")!;
+      expect([...line.children].map((badge) => badge.textContent)).toEqual(["Router", "Signed in", "No agent"]);
+      expect([...line.children].map((badge) => badge.getAttribute("data-size") ?? size)).toEqual([size, size, size]);
+      expect(line.querySelector(".fa-entity-tag")).toHaveAttribute("data-tone", "neutral");
+      unmount();
+    }
+  });
+
+  it("shows tags without a state, and leaves them out of rows", () => {
+    const { container, unmount } = render(<EntityIdentity tier="compact" name="EDGE-RT1" tags={["Router"]} />);
+    expect(container.querySelector(".fa-entity-state")).toHaveTextContent("Router");
+    unmount();
+    render(<EntityIdentity tier="row" name="EDGE-RT1" tags={["Router"]} />);
+    expect(screen.queryByText("Router")).toBeNull();
+  });
+
+  it("lets a state slot reuse the library's state badge", () => {
+    const { container } = render(
+      <EntityIdentity tier="compact" name="EDGE-RT1" slots={{ state: <EntityIdentity.State state={state} size="sm" /> }} />,
+    );
+    expect(container.querySelector(".fa-entity-state .fa-entity-badge")).toHaveTextContent("No agent");
+  });
+});

@@ -259,7 +259,7 @@ test("network workspace syncs map, table, details and shared site actions @respo
   } else await events.click();
   const log = workspace.getByRole("grid", { name: "Network events" });
   await expect(
-    log.getByRole("button", { name: /^Last 24 hours, 9 events/ }),
+    log.getByRole("button", { name: /^Last 24 hours 9\b/ }),
   ).toBeVisible();
   await expect(log).toContainText("Gateway stopped reporting");
   await log

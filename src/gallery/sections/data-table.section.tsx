@@ -606,14 +606,18 @@ function GroupedDemo() {
   );
   const groups = useMemo<DataTableGroup[]>(() => {
     const counts = new Map<string, number>();
-    for (const endpoint of all)
+    const online = new Map<string, number>();
+    for (const endpoint of all) {
       counts.set(endpoint.os, (counts.get(endpoint.os) ?? 0) + 1);
+      if (endpoint.status === "online") online.set(endpoint.os, (online.get(endpoint.os) ?? 0) + 1);
+    }
     return [...counts.entries()]
       .toSorted((a, b) => b[1] - a[1])
       .map(([os, count]) => ({
         id: os,
         label: os,
         count,
+        detail: `${online.get(os) ?? 0} online`,
         icon: /windows/i.test(os) ? <IconWindows /> : <IconOperatingSystem />,
       }));
   }, [all]);

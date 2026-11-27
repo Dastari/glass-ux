@@ -78,6 +78,17 @@
     overflow: clip;
     overflow-clip-margin: var(--focus-reach);
   }
+  /* A kind with titleVisible: false. The title stays the heading's text (and the window's name)
+     but takes no room, so the subtitle leads the bar. */
+  .fa-window-heading[data-title-hidden] > .fa-window-title {
+    position: absolute;
+    width: 1px; /* tokens:allow fixed accessibility clipping box */
+    height: 1px; /* tokens:allow fixed accessibility clipping box */
+    margin: -1px; /* tokens:allow cancel the clipping box in flow */
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
   .fa-window:not([data-focused]) .fa-window-title {
     color: var(--fg-muted);
   }
@@ -304,6 +315,15 @@
     .fa-window-subtitle {
       display: none;
     }
+    /* With the subtitle gone, a hidden title shows again so the bar keeps a heading. */
+    .fa-window-heading[data-title-hidden] > .fa-window-title {
+      position: static;
+      width: auto;
+      height: auto;
+      margin: 0;
+      overflow: visible;
+      clip-path: none;
+    }
   }
   @container window (width < 34rem) {
     .fa-window-status-meta {
@@ -313,6 +333,15 @@
   @container window (width < 22rem) {
     .fa-window-subtitle {
       display: none;
+    }
+    /* With the subtitle gone, a hidden title shows again so the bar keeps a heading. */
+    .fa-window-heading[data-title-hidden] > .fa-window-title {
+      position: static;
+      width: auto;
+      height: auto;
+      margin: 0;
+      overflow: visible;
+      clip-path: none;
     }
     .fa-window-icon {
       display: none;

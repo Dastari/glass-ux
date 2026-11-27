@@ -73,7 +73,8 @@ function GroupHeaderView({
           type="button"
           className="fa-dt-group-toggle"
           aria-expanded={!collapsed}
-          aria-label={messages.groupSummary({ label: group.label, count: formatCount(group.count, noun, locale) })}
+          // Named by what it shows (WCAG 2.5.3); the count with its noun is the description.
+          aria-description={messages.groupSummary({ label: group.label, count: formatCount(group.count, noun, locale) })}
           tabIndex={tabIndex}
           data-dt-interactive=""
           onClick={(event) => controller.toggleGroup(group.id, event.altKey)}
@@ -84,14 +85,15 @@ function GroupHeaderView({
           {group.icon ? (
             <span className="fa-dt-group-icon">{group.icon}</span>
           ) : null}
-          <span className="fa-dt-group-label">{group.label}</span>
-          <span className="fa-dt-group-count" data-numeric aria-hidden>
+          <span className="fa-dt-group-label">{group.label}</span>{" "}
+          <span className="fa-dt-group-count" data-numeric>
             {formatNumber(group.count, 0, locale)}
           </span>
           {group.detail ? (
-            <span className="fa-dt-group-detail" aria-hidden>
-              {group.detail}
-            </span>
+            <>
+              {" "}
+              <span className="fa-dt-group-detail">{group.detail}</span>
+            </>
           ) : null}
         </button>
       </div>

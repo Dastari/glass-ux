@@ -128,9 +128,12 @@ export function ContextAvatar({
       ) : item.icon ? (
         <span className="fa-context-avatar-icon">{item.icon}</span>
       ) : (
-        <span className="fa-context-avatar-initials">
-          {item.initials ?? contextInitials(item.name)}
-        </span>
+        // Drawn by CSS from data-initials, as Avatar's are: a picture of the name, so it is not
+        // visible text a containing control's name must repeat (WCAG 2.5.3).
+        <span
+          className="fa-context-avatar-initials"
+          data-initials={item.initials ?? contextInitials(item.name)}
+        />
       )}
     </span>
   );

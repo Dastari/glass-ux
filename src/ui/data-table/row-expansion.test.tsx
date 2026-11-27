@@ -732,3 +732,40 @@ describe("clipboard", () => {
 it("keeps export text unchanged outside trees", () => {
   expect(exportTsv({ rows: flat, columns: [{ id: "n", header: "N", value: (row: Item) => row.name }] })).toContain("Alder");
 });
+
+describe("cell renderers and group headers", () => {
+  it("draws a renderer's string as truncating text, keeps its hooks, and leaves null and elements alone (#37)", () => {
+    function Counted() {
+      const [label] = useState("Kept state");
+      return <b data-testid="hooked">{label}</b>;
+    }
+    const drawn = col.columns([
+      col.accessor("name", { header: "Name", cardRole: "title", cell: () => "Microsoft Windows 11 Business" }),
+      col.accessor("id", { header: "Reference", cell: (context) => (context.row.original.id === "a" ? 42 : context.row.original.id === "b" ? null : <Counted />) }),
+    ]);
+    render(<Table columns={drawn} />);
+    const text = rowOf("a").querySelector('[data-col="name"] .fa-dt-text');
+    expect(text).toHaveTextContent("Microsoft Windows 11 Business");
+    expect(rowOf("a").querySelector('[data-col="id"] .fa-dt-text')).toHaveTextContent("42");
+    expect(rowOf("b").querySelector('[data-col="id"]')!.textContent).toBe("");
+    expect(within(rowOf("c")).getByTestId("hooked")).toHaveTextContent("Kept state");
+  });
+
+  it("names a group header by what it shows, with the count's sentence as its description (#36)", () => {
+    render(
+      <Table
+        grouping={{
+          groupOf: (row) => (row.id === "a" ? "one" : "two"),
+          groups: [
+            { id: "one", label: "Endpoints", count: 1, detail: "Dell ×1" },
+            { id: "two", label: "Printers", count: 2 },
+          ],
+        }}
+      />,
+    );
+    const toggles = [...document.querySelectorAll<HTMLElement>(".fa-dt-group-toggle")];
+    expect(toggles.map((toggle) => toggle.getAttribute("aria-label"))).toEqual([null, null]);
+    expect(toggles.map((toggle) => toggle.textContent)).toEqual(["Endpoints 1 Dell ×1", "Printers 2"]);
+    expect(toggles[0]).toHaveAttribute("aria-description", "Endpoints, 1 row");
+  });
+});

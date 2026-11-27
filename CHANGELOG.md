@@ -4,7 +4,22 @@ All notable changes to Glass UX. Versions follow [semantic versioning](https://s
 while the major version is 0, a minor release may contain breaking changes, and each one
 has upgrade steps in the [migration guide](docs/migration.md).
 
-## 0.19.15
+## 0.19.16
+
+### Added
+
+- Areas around map points (#40). `MapPoint.radius` (metres) draws a circle of its true size around
+  a GeoMap point, such as a site's geofence: a faint fill under an accent line at every zoom, themed
+  by `--fa-map-area`. Framing on the points keeps each circle whole.
+- `PinMap` `radius`: the same circle around the pin, following it as it moves. `onRadiusChange` adds
+  a handle on the circle's edge, dragged or stepped with the keyboard as a slider (`radiusLabel`,
+  default "Radius", read as a distance), held to `minRadius`, `maxRadius` and `radiusStep`
+  (defaults 10 m, 10,000 m and 5 m).
+
+### Fixed
+
+- Arabic: the map pin's name ("Pin at …") no longer ends in a stray word on a second line.
+
 
 ### Added
 
